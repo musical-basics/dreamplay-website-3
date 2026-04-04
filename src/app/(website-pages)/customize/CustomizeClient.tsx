@@ -570,7 +570,7 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
                 })()}
 
                 {/* Steps Sub-Navbar */}
-                <header id="sticky-nav" className="w-full mt-[100px] bg-[#050505]/95 backdrop-blur-md border-b border-white/5 shadow-sm">
+                <header id="sticky-nav" className="w-full bg-[#050505]/95 backdrop-blur-md border-b border-white/5 shadow-sm">
                     <div className="mx-auto max-w-7xl px-4 md:px-6">
                         <div className="flex h-12 md:h-14 items-center justify-between">
                             <div className="hidden md:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-medium text-white/40 mx-auto">
