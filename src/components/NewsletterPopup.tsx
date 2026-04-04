@@ -74,8 +74,11 @@ export default function NewsletterPopup() {
                 console.log('[PopupDebug] getDiscountPopupStatus() threw error, proceeding anyway:', e);
             }
 
-            // Always use a single PDF popup at 12s
-            const popups = [{ type: "pdf", delaySeconds: 12 }];
+            // Popup sequence: PDF guide at 20s, then VIP shipping at 4min
+            const popups = [
+                { type: "pdf", delaySeconds: 20 },
+                { type: "shipping", delaySeconds: 240 },
+            ];
 
             console.log('[PopupDebug] Scheduling', popups.length, 'popups:', JSON.stringify(popups));
 
