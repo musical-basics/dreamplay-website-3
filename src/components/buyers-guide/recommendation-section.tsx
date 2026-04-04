@@ -21,7 +21,7 @@ function getProductImage(model: string) {
             return "/products/DS6.0-black.png"
         case "DS6.5":
             return "/products/DS6.5-black.png"
-        case "DreamPlay Bundle":
+        case "DreamPlay Premium Bundle":
             return "/products/bundle.png"
         default:
             return "/products/DS6.0-black.png"
@@ -54,7 +54,7 @@ export function RecommendationSection({ profile }: RecommendationSectionProps) {
                     reason: "For teens with larger hands or if the child is already approaching adult hand size",
                 },
                 alternative2: {
-                    model: "DreamPlay Bundle",
+                    model: "DreamPlay Premium Bundle",
                     name: "Complete Setup",
                     reason: "Includes stand, bench, and sustain pedal—everything needed to start playing immediately",
                 },
@@ -79,7 +79,7 @@ export function RecommendationSection({ profile }: RecommendationSectionProps) {
                     reason: 'If you have particularly small hands (under 7" span) and want the narrowest keys available',
                 },
                 alternative2: {
-                    model: "DreamPlay Bundle",
+                    model: "DreamPlay Premium Bundle",
                     name: "Complete Setup",
                     reason: "Get the complete setup with the bundle including stand, bench, and sustain pedal",
                 },
@@ -104,7 +104,7 @@ export function RecommendationSection({ profile }: RecommendationSectionProps) {
                     reason: "If you're on the border between small and average, or prefer slightly wider keys",
                 },
                 alternative2: {
-                    model: "DreamPlay Bundle",
+                    model: "DreamPlay Premium Bundle",
                     name: "Complete Setup",
                     reason: "Get the complete setup with the bundle including stand, bench, and sustain pedal",
                 },
@@ -129,7 +129,7 @@ export function RecommendationSection({ profile }: RecommendationSectionProps) {
                     reason: "If comfort and reduced strain are your top priorities, or you're on the smaller end of average",
                 },
                 alternative2: {
-                    model: "DreamPlay Bundle",
+                    model: "DreamPlay Premium Bundle",
                     name: "Complete Setup",
                     reason: "The most popular choice—includes everything you need to start playing immediately",
                 },
@@ -153,7 +153,7 @@ export function RecommendationSection({ profile }: RecommendationSectionProps) {
                 reason: "Even with larger hands, some pianists prefer slightly narrower keys for faster passages",
             },
             alternative2: {
-                model: "DreamPlay Bundle",
+                model: "DreamPlay Premium Bundle",
                 name: "Complete Setup",
                 reason: "Includes stand, bench, and sustain pedal for a complete practice setup",
             },
@@ -232,7 +232,7 @@ export function RecommendationSection({ profile }: RecommendationSectionProps) {
                         <div className="w-full lg:w-auto lg:min-w-[280px] p-6 rounded-2xl bg-muted">
                             <p className="text-sm text-muted-foreground mb-1">Price</p>
                             <div className="flex items-baseline gap-2 mb-2">
-                                <span className="text-4xl font-bold text-gray-900">$1,099</span>
+                                <span className="text-4xl font-bold text-gray-900">$999</span>
                             </div>
                             <p className="text-sm text-muted-foreground mb-4">Keyboard only</p>
 
