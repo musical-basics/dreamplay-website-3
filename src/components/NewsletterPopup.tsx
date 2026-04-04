@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { X, FileText, Package, DollarSign, CheckCircle2 } from "lucide-react";
 import SurveyPopup from "@/components/SurveyPopup";
 
-import { getDiscountPopupStatus, getJourneyById } from "@/actions/admin-actions";
-import type { JourneyPopup } from "@/actions/admin-actions";
+
+import { getDiscountPopupStatus } from "@/actions/admin-actions";
 import { subscribeToNewsletter } from "@/actions/email-actions";
 import { trackEmailConversion } from "@/components/EmailTracker";
 
@@ -29,9 +29,6 @@ export default function NewsletterPopup() {
     const hasExitFired = useRef(false);
     const pathname = usePathname();
 
-    // Journey popup queue
-    const journeyPopupsRef = useRef<JourneyPopup[]>([]);
-    const popupIndexRef = useRef(0);
 
     // A/B test refs
     const abBucketRef = useRef<string | null>(null);
@@ -77,32 +74,9 @@ export default function NewsletterPopup() {
                 console.log('[PopupDebug] getDiscountPopupStatus() threw error, proceeding anyway:', e);
             }
 
-            // Store journey ID for A/B conversion tracking
-            const journeyMatch = document.cookie.match(/(^| )dp_journey_id=([^;]+)/);
-            abBucketRef.current = journeyMatch?.[2] || 'default';
-            console.log('[PopupDebug] dp_journey_id cookie:', journeyMatch?.[2] || 'NOT FOUND');
+            // Always use a single PDF popup at 12s
+            const popups = [{ type: "pdf", delaySeconds: 12 }];
 
-            // Fetch journey popups
-            let popups: JourneyPopup[] = [];
-            if (journeyMatch?.[2]) {
-                try {
-                    const journey = await getJourneyById(journeyMatch[2]);
-                    console.log('[PopupDebug] getJourneyById() returned:', JSON.stringify(journey?.popups));
-                    if (journey?.popups?.length) {
-                        popups = journey.popups;
-                    }
-                } catch (e) {
-                    console.log('[PopupDebug] getJourneyById() threw error:', e);
-                }
-            }
-
-            // Fallback: if no journey popups configured, use a single PDF popup at 12s
-            if (popups.length === 0) {
-                popups = [{ type: "pdf", delaySeconds: 12 }];
-                console.log('[PopupDebug] Using fallback popup (pdf at 12s)');
-            }
-
-            journeyPopupsRef.current = popups;
             console.log('[PopupDebug] Scheduling', popups.length, 'popups:', JSON.stringify(popups));
 
             // Schedule each popup with its delay
@@ -128,7 +102,6 @@ export default function NewsletterPopup() {
                     setActivePopup(prev => {
                         if (prev === "none") {
                             console.log(`[PopupDebug] SHOWING popup: ${popupType}`);
-                            popupIndexRef.current = index;
                             return popupType;
                         }
                         console.log(`[PopupDebug] SKIPPED: another popup (${prev}) is already active`);
@@ -161,11 +134,8 @@ export default function NewsletterPopup() {
 
             hasExitFired.current = true;
             console.log('[PopupDebug] Exit-intent fired');
-            // Show first unseen popup from journey, or shipping as fallback
-            const unseen = journeyPopupsRef.current.find(p =>
-                localStorage.getItem(`dp_v2_${p.type}_seen`) !== 'true'
-            );
-            setActivePopup((unseen?.type || "shipping") as PopupType);
+            // Exit-intent: show pdf if not seen, else shipping
+            setActivePopup((localStorage.getItem('dp_v2_pdf_seen') !== 'true' ? 'pdf' : 'shipping') as PopupType);
         };
 
         // Delay attaching exit-intent by 5s to prevent false triggers on page load/refresh

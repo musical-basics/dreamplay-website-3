@@ -4,8 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { SpecialOfferHeader } from "@/components/intro-offer/header";
-import { getCountdownDate, getJourneyById } from "@/actions/admin-actions";
-import type { JourneyProduct } from "@/actions/admin-actions";
+import { getCountdownDate } from "@/actions/admin-actions";
 import { subscribeToNewsletter } from "@/actions/email-actions";
 import { trackEmailConversion } from "@/components/EmailTracker";
 import { useABAnalytics } from "@/hooks/use-ab-analytics";
@@ -73,20 +72,6 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
     const [widgetTimeLeft, setWidgetTimeLeft] = useState(12 * 60);
     const [showWidget, setShowWidget] = useState(true);
 
-    // Journey Products State (replaces priceTier, hiddenProducts, and hardcoded prices)
-    const [journeyProducts, setJourneyProducts] = useState<JourneyProduct[] | null>(null);
-
-    useEffect(() => {
-        // Fetch journey products based on the assigned journey cookie
-        const match = document.cookie.match(/(^| )dp_journey_id=([^;]+)/);
-        if (match) {
-            getJourneyById(match[2]).then(journey => {
-                if (journey?.products?.length) {
-                    setJourneyProducts(journey.products);
-                }
-            });
-        }
-    }, []);
 
     const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
@@ -159,23 +144,8 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
     };
 
     // --- BUILD VISIBLE TIERS ---
-    // If a journey has products defined, use those (with catalog defaults merged in).
-    // Otherwise fall back to global product visibility (hiddenProducts prop).
+    // Always use static PRODUCT_CATALOG filtered by hiddenProducts
     const tiers = (() => {
-        if (journeyProducts && journeyProducts.length > 0) {
-            return journeyProducts.map((jp: JourneyProduct) => {
-                const catalog = PRODUCT_CATALOG[jp.id];
-                if (!catalog) return null;
-                return {
-                    ...catalog,
-                    price: jp.price,
-                    originalPrice: jp.originalPrice || null,
-                    badge: jp.badge !== undefined ? jp.badge : catalog.badge,
-                    title: jp.label || catalog.title,
-                };
-            }).filter(Boolean);
-        }
-        // Fallback: use all products minus hiddenProducts
         const defaultOrder = ['reservation', 'reserve50', 'solo', 'full'];
         return defaultOrder
             .filter(id => !hiddenProducts.includes(id))
@@ -374,8 +344,7 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
             const color = appState.color || 'Black';
 
             // Variant lookup: journey product variantId > VARIANT_MAP[tier][size][color]
-            const journeyProduct = journeyProducts?.find(jp => jp.id === tierId);
-            const exactVariantId = journeyProduct?.variantId || VARIANT_MAP[tierId]?.[size]?.[color] || "";
+            const exactVariantId = VARIANT_MAP[tierId]?.[size]?.[color] || "";
 
             let checkoutUrl = "";
 
