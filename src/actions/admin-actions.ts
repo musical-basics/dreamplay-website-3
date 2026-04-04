@@ -662,6 +662,8 @@ export type JourneyConfig = {
     checkout: string;    // e.g., "/customize"
     popups: JourneyPopup[]; // Ordered list of popups with timing (up to 10)
     products: JourneyProduct[]; // Which products to show + at what price
+    announcementText?: string;  // Text shown in gold top banner (omit to hide)
+    priceTier?: string;         // "standard" = served to bots only (SEO protection)
 };
 
 export async function getJourneyConfigs(): Promise<JourneyConfig[]> {
