@@ -87,7 +87,7 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
             originalPrice: null as string | null,
             description: "100% refundable reservation. Lock in Founder\u0027s pricing and secure your Batch 1 (October) delivery. Pay the remaining balance only when your piano is boxed and ready to ship.",
             includes: ["Batch 1 Delivery Slot", "Founder\u0027s Price Lock", "Full Refund Anytime"],
-            delivery: "Aug 2026",
+            delivery: "Oct 2026",
             backers: 0,
             remaining: 50,
             total: 50,
@@ -103,7 +103,7 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
             originalPrice: null as string | null,
             description: "Pay 50% now ($499), the rest ($500 + shipping/taxes) when ready to ship.",
             includes: ["DreamPlay One Keyboard"],
-            delivery: "Aug 2026",
+            delivery: "Oct 2026",
             backers: 2,
             remaining: 8,
             total: 10,
@@ -940,11 +940,46 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
                                                 Retail MSRP: {tier.retailPrice}
                                             </p>
                                         )}
+
+                                        {/* 50% info pill */}
+                                        {tier.subtitle?.includes('50%') && (() => {
+                                            const [open, setOpen] = React.useState(false);
+                                            return (
+                                                <div className="mt-3">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+                                                        className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest transition-colors cursor-pointer ${isSelected ? 'text-black/40 hover:text-black/60' : 'text-white/40 hover:text-white/60'}`}
+                                                    >
+                                                        <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border text-[8px] ${isSelected ? 'border-black/30' : 'border-white/30'}`}>?</span>
+                                                        How does this work?
+                                                    </button>
+                                                    {open && (
+                                                        <div className={`mt-3 p-4 border text-xs leading-relaxed ${isSelected ? 'border-black/10 bg-black/[0.03] text-black/60' : 'border-white/10 bg-white/[0.04] text-white/60'}`}>
+                                                            <div className="flex flex-col gap-2.5">
+                                                                <div className="flex gap-2.5">
+                                                                    <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ${isSelected ? 'bg-black text-white' : 'bg-white text-black'}`}>1</span>
+                                                                    <span>Pay <strong>{tier.price}</strong> today to lock in your Founder&apos;s price and secure your Batch 1 slot.</span>
+                                                                </div>
+                                                                <div className="flex gap-2.5">
+                                                                    <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ${isSelected ? 'bg-black text-white' : 'bg-white text-black'}`}>2</span>
+                                                                    <span>We&apos;ll email you before your piano ships to collect the remaining balance.</span>
+                                                                </div>
+                                                                <div className="flex gap-2.5">
+                                                                    <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ${isSelected ? 'bg-black text-white' : 'bg-white text-black'}`}>3</span>
+                                                                    <span>Full refund available anytime before your piano ships — no questions asked.</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
 
                                     <p className={`mt-6 min-h-[80px] w-full flex-grow font-sans text-sm leading-relaxed ${isSelected ? 'text-black/60' : 'text-white/70'}`}>
                                         {tier.description}
                                     </p>
+
 
                                     {/* Includes — glassmorphism panel */}
                                     {tier.includes && (
