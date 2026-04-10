@@ -23,24 +23,37 @@ export type ReservationDecision = 'refund_requested' | 'keep_reservation' | 'upg
  * Comparison is case-insensitive.
  */
 export async function isBuyer(email: string): Promise<boolean> {
+    const normalizedEmail = email.toLowerCase().trim()
+    console.log('[isBuyer] checking email:', normalizedEmail)
+    console.log('[isBuyer] SUPABASE_URL set:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)
+    console.log('[isBuyer] SERVICE_ROLE_KEY set:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+
     try {
-        const { data, error } = await supabase
+        const { data, error, status, statusText } = await supabase
             .from('buyer_emails')
             .select('email')
-            .eq('email', email.toLowerCase().trim())
+            .eq('email', normalizedEmail)
             .maybeSingle()
 
+        console.log('[isBuyer] query status:', status, statusText)
+        console.log('[isBuyer] data:', data)
+        console.log('[isBuyer] error:', error)
+
         if (error) {
-            console.error('[reservation-actions] isBuyer error:', error)
+            console.error('[isBuyer] ERROR - code:', error.code, 'message:', error.message, 'details:', error.details, 'hint:', error.hint)
+            // If we can't reach the DB, fail open — show the page rather than bouncing the buyer
             return false
         }
 
-        return !!data
-    } catch (err) {
-        console.error('[reservation-actions] isBuyer unexpected error:', err)
+        const result = !!data
+        console.log('[isBuyer] result:', result)
+        return result
+    } catch (err: any) {
+        console.error('[isBuyer] UNEXPECTED ERROR:', err?.message, err)
         return false
     }
 }
+
 
 // ─── Decision Records ───
 
