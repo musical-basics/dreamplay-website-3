@@ -234,7 +234,7 @@ async function sendTeamNotification(
  */
 const CONFIRMATION_COPY: Record<ReservationDecision, { subject: string; headline: string; body: string; nextStep: string }> = {
     refund_requested: {
-        subject: 'Your DreamPlay Refund Request — Received',
+        subject: 'Your DreamPlay Refund Request: Received',
         headline: "We've received your refund request.",
         body: `
             <p style="margin: 0 0 16px; color: #444; line-height: 1.6;">
@@ -261,13 +261,13 @@ const CONFIRMATION_COPY: Record<ReservationDecision, { subject: string; headline
             </p>
             <p style="margin: 0 0 16px; color: #444; line-height: 1.6;">
                 DreamPlay One is on track for <strong>Q4 2026</strong> delivery. We\'ll keep you updated
-                as we hit major milestones — from tooling to final assembly.
+                as we hit major milestones: tooling, assembly, and delivery.
             </p>
         `,
         nextStep: "We'll be in touch as production progresses.",
     },
     upgrade_to_pro: {
-        subject: 'Your DreamPlay Pro Upgrade Request — Received',
+        subject: 'Your DreamPlay Pro Upgrade Request: Received',
         headline: "Welcome to DreamPlay Pro.",
         body: `
             <p style="margin: 0 0 16px; color: #444; line-height: 1.6;">
@@ -324,7 +324,7 @@ async function sendBuyerConfirmation(
                 <p style="color: #444; line-height: 1.6; margin: 32px 0 8px;">
                     Thank you again for being part of this from the beginning.
                 </p>
-                <p style="color: #444; margin: 0;">— Lionel Yu, Founder</p>
+                <p style="color: #444; margin: 0;">Lionel Yu, Founder</p>
 
                 <!-- Footer -->
                 <hr style="margin: 40px 0 24px; border: none; border-top: 1px solid #eee;" />
