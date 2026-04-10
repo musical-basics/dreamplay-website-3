@@ -144,7 +144,7 @@ export default function ReservationDecisionModule({
                         </div>
                         <div className="relative aspect-[4/3] overflow-hidden border border-white/10">
                             <Image
-                                src="/images/pro/nightmare-black-angled.png"
+                                src="/images/pro/nightmare-black-angled.jpg"
                                 alt="DreamPlay Pro — Nightmare Black"
                                 fill
                                 className="object-cover"
@@ -290,7 +290,7 @@ export default function ReservationDecisionModule({
                                     </div>
                                     <div className="relative aspect-[3/2] overflow-hidden border border-white/10">
                                         <Image
-                                            src="/images/pro/nightmare-black-angled-2.png"
+                                            src="/images/pro/nightmare-black-angled-2.jpg"
                                             alt="Nightmare Black"
                                             fill
                                             className="object-cover"
