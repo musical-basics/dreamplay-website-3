@@ -4,8 +4,6 @@ import { SpecialOfferHeader } from "@/components/intro-offer/header";
 import Footer from "@/components/Footer";
 import VIPDashboardClient from "./VIPDashboardClient";
 import PromoCodeBox from "./PromoCodeBox";
-import ReservationDecisionModule from "./ReservationDecisionModule";
-import { getReservationDecision } from "@/actions/reservation-actions";
 
 export default async function VIPPage() {
     const supabase = await createClient();
@@ -14,9 +12,6 @@ export default async function VIPPage() {
     if (!user || error) {
         redirect("/login");
     }
-
-    // Fetch existing decision (server-side, service role via reservation-actions)
-    const existingDecision = await getReservationDecision(user.id);
 
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white/20">
@@ -37,22 +32,6 @@ export default async function VIPPage() {
                         </p>
                         <p className="font-sans text-sm text-white/40">{user.email}</p>
                     </div>
-
-                    {/* ── Reservation Update Section ── */}
-                    <div className="mb-16">
-                        <div className="mb-8">
-                            <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/50 mb-2">Reservation Update</p>
-                            <h2 className="font-serif text-2xl md:text-3xl text-white">Your Next Steps</h2>
-                        </div>
-                        <ReservationDecisionModule
-                            userId={user.id}
-                            email={user.email ?? null}
-                            existingDecision={existingDecision}
-                        />
-                    </div>
-
-                    {/* Divider */}
-                    <div className="h-px bg-white/5 mb-16" />
 
                     {/* Main Grid */}
                     <div className="grid lg:grid-cols-2 gap-8">
@@ -129,7 +108,7 @@ export default async function VIPPage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/20 mb-1">Stage 4 — Target: Q4 2026</p>
+                                        <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/20 mb-1">Stage 4 — Target: October 2026</p>
                                         <h4 className="font-sans font-bold text-white/50 text-sm">Shipping &amp; Delivery</h4>
                                         <p className="font-sans text-xs text-white/30 mt-1">Your DreamPlay One arrives at your door.</p>
                                     </div>
