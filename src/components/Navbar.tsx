@@ -9,11 +9,10 @@ import { getHomepage, syncHomepageAB } from "@/lib/homepage-ab"
 import { useABAnalytics } from "@/hooks/use-ab-analytics"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-import { RegisterModal } from "../RegisterModal"
-import { CountdownBanner } from "../extended-offer/countdown-banner"
+import { RegisterModal } from "./RegisterModal"
 import { useJourneyCheckout } from "@/hooks/use-journey-checkout"
 
-interface SpecialOfferHeaderProps {
+interface NavbarProps {
     forceOpaque?: boolean;
     darkMode?: boolean;
     className?: string;
@@ -61,7 +60,7 @@ function NavDropdown({ label, items, useDarkText }: { label: string; items: { la
     );
 }
 
-export function SpecialOfferHeader({ forceOpaque = false, darkMode = false, className = "" }: SpecialOfferHeaderProps) {
+export function Navbar({ forceOpaque = false, darkMode = false, className = "" }: NavbarProps) {
     const { trackClick } = useABAnalytics("special_offer_variant", { trackTime: false })
     const [scrolled, setScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -154,6 +153,7 @@ export function SpecialOfferHeader({ forceOpaque = false, darkMode = false, clas
                                 useDarkText={useDarkText}
                                 items={[
                                     { label: "Our Product", href: "/premium-offer" },
+                                    { label: "DreamPlay Pro", href: "/dreamplay-pro" },
                                     { label: "Discover", href: "/intro-offer" },
                                     { label: "Explore", href: "/extended-offer" },
                                 ]}
@@ -258,6 +258,7 @@ export function SpecialOfferHeader({ forceOpaque = false, darkMode = false, clas
                             <nav className="flex flex-col p-4">
                                 <div className="px-1 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">DreamPlay Keyboards</div>
                                 <Link href="/premium-offer" className="py-3 pl-3 text-neutral-600 hover:text-black font-medium border-b border-gray-50" onClick={() => setIsMobileMenuOpen(false)}>Our Product</Link>
+                                <Link href="/dreamplay-pro" className="py-3 pl-3 text-neutral-600 hover:text-black font-medium border-b border-gray-50" onClick={() => setIsMobileMenuOpen(false)}>DreamPlay Pro</Link>
                                 <Link href="/customize" className="py-3 pl-3 text-neutral-600 hover:text-black font-medium border-b border-gray-50" onClick={() => setIsMobileMenuOpen(false)}>Discover</Link>
                                 <Link href="/extended-offer" className="py-3 pl-3 text-neutral-600 hover:text-black font-medium border-b border-gray-50" onClick={() => setIsMobileMenuOpen(false)}>Explore</Link>
 

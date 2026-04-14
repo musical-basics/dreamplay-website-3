@@ -1,4 +1,4 @@
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FAQList from "@/components/faq-list";
 import { getFaqItems } from "@/actions/faq-actions";
@@ -26,7 +26,7 @@ export default async function FAQPage() {
     return (
         <div className="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-200">
             <FaqJsonLd items={faqItems} />
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main className="pt-32 pb-24">
                 <div className="max-w-4xl mx-auto px-6">

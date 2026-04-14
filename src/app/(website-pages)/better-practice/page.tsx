@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AnimatedSection } from "@/components/animated-section";
 import { ArrowRight, Quote, Brain, Crosshair } from "lucide-react";
@@ -10,7 +10,7 @@ import { UrgencySubtext } from "@/components/UrgencySubtext";
 export default function BetterPracticePage() {
     return (
         <div>
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
             <main className="pt-[100px]">
                 {/* ═══ HERO — DARK ═══ */}
                 <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-[#050505] py-20 text-center">

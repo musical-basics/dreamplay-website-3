@@ -1,6 +1,6 @@
 "use client"
 
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import TestimonialsSection from "@/components/checkout/TestimonialsSection"
 import { HeroSection } from "@/components/intro-offer/hero-section"
 import { CountdownTimer } from "@/components/intro-offer/countdown-timer"
@@ -26,7 +26,7 @@ export default function IntroOfferPage() {
                 }
             `}</style>
 
-            <SpecialOfferHeader />
+            <Navbar />
 
             {/* Card-stacking parallax sections */}
             <div className="relative">

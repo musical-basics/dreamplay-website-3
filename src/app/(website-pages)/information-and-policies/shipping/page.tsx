@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { subscribeToNewsletter } from "@/actions/email-actions";
 import Link from "next/link";
@@ -100,7 +100,7 @@ export default function ShippingPage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-white/20">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main>
 

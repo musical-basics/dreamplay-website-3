@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Check, ArrowDown } from "lucide-react"
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { QuestionOne } from "@/components/buyers-guide/question-one"
 import { InfoSectionOne } from "@/components/buyers-guide/info-section-one"
@@ -80,7 +80,7 @@ export default function BuyersGuidePage() {
             '--primary': '0 0% 9%',
             '--primary-foreground': '0 0% 98%',
         } as React.CSSProperties}>
-            <SpecialOfferHeader forceOpaque />
+            <Navbar forceOpaque />
 
             {/* Fixed Journey Timeline - far right (desktop only) */}
             {currentStep >= 1 && (

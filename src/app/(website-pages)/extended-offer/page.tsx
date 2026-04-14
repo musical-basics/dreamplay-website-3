@@ -1,5 +1,5 @@
 import { Playfair_Display, Inter } from "next/font/google"
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import { CrowdfundingSection } from "@/components/extended-offer/crowdfunding-section"
 import { SocialProofBar } from "@/components/extended-offer/social-proof-bar"
 import { InlineBuyersGuide } from "@/components/extended-offer/audience-fork-section"
@@ -44,7 +44,7 @@ export default async function ExtendedOfferPage() {
     const hiddenProducts = await getHiddenProducts()
     return (
         <div className={`${playfair.variable} ${inter.variable} font-sans antialiased`}>
-            <SpecialOfferHeader />
+            <Navbar />
             <main>
                 {/* ⚡ APPROACH — Hook in 3 seconds */}
                 <CrowdfundingSection />

@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import Footer from "@/components/Footer"
 
 export const metadata = {
@@ -12,18 +12,31 @@ export const metadata = {
     },
 }
 
-const featureList = [
-    "Graded Hammer Action",
-    "Triple-Sensor Pro Action",
-    "256-Note Polyphony",
-    "230 Onboard Sound Presets",
-    "Advanced LED System (Above and Within Keys)",
-    "DreamPlay Learn App Included",
-    "40W Stereo Speakers",
-    "Bluetooth Audio and MIDI",
-    "USB Type-C MIDI",
-    "Triple Pedal Support",
-    "Dual Headphone Jacks (3.5mm + 6.35mm)",
+const engineeringPillars = [
+    {
+        title: "Triple-Sensor Pro Action",
+        body: "Three sensors per key track hammer velocity, not just depression. Repeated notes and trills respond like a concert grand's escapement.",
+    },
+    {
+        title: "Graded Hammer System",
+        body: "Heavier touch in the bass yielding to a lighter touch in the treble. Synthetic ivory and ebony surfaces absorb moisture for sustained grip.",
+    },
+    {
+        title: "256-Note Polyphony",
+        body: "No voice is dropped under heavy sustain. 230 meticulously sampled onboard sounds covering grands, strings, organs, and more.",
+    },
+    {
+        title: "Dual-Axis LED Guidance",
+        body: "LEDs above and within every key. Invisible until commanded, then illuminating complex pieces with precise visual telemetry.",
+    },
+    {
+        title: "40W Stereo Array",
+        body: "Upward-firing transducers map acoustic resonance to the player's perspective, mimicking the soundboard reflection of a grand.",
+    },
+    {
+        title: "Unbound Connectivity",
+        body: "High-fidelity Bluetooth MIDI and Audio, USB Type-C, triple pedal support, and dual headphone jacks (3.5mm and 6.35mm).",
+    },
 ]
 
 const variants = [
@@ -52,6 +65,21 @@ const comparisonRows = [
     { label: "No Tariff Fees", one: "No", pro: "Yes" },
 ]
 
+const keyboardOnlyIncludes = [
+    "DreamPlay One Pro 88-key keyboard",
+    "Sustain pedal",
+    "DreamPlay Learn app (lifetime access)",
+    "Power adapter and USB-C cable",
+]
+
+const premiumBundleIncludes = [
+    "DreamPlay One Pro 88-key keyboard",
+    "Matched furniture stand",
+    "Triple pedal unit (damper, sostenuto, soft)",
+    "Padded bench",
+    "DreamPlay Learn app (lifetime access)",
+]
+
 export default function DreamPlayProPage() {
     const productJsonLd = {
         "@context": "https://schema.org",
@@ -63,10 +91,7 @@ export default function DreamPlayProPage() {
             "https://dreamplaypianos.com/images/pro/nightmare-black-angled.jpg",
             "https://dreamplaypianos.com/images/pro/aztec-gold-full.jpg",
         ],
-        brand: {
-            "@type": "Brand",
-            name: "DreamPlay Pianos",
-        },
+        brand: { "@type": "Brand", name: "DreamPlay Pianos" },
         offers: {
             "@type": "Offer",
             url: "https://dreamplaypianos.com/dreamplay-pro",
@@ -79,221 +104,490 @@ export default function DreamPlayProPage() {
     }
 
     return (
-        <div className="min-h-screen bg-neutral-50 text-neutral-900">
+        <div className="bg-neutral-950 text-neutral-50">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
             />
 
-            <SpecialOfferHeader forceOpaque={true} darkMode={false} className="border-b border-neutral-200 bg-white" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-neutral-950" />
 
             <main className="pt-16">
-                <section className="relative overflow-hidden bg-gradient-to-b from-neutral-950 via-neutral-900 to-neutral-800 px-4 py-18 text-white md:px-8 lg:px-12">
-                    <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
-                        <div>
-                            <p className="mb-4 font-sans text-[11px] uppercase tracking-[0.25em] text-amber-300">Flagship Digital Piano</p>
-                            <h1 className="font-serif text-4xl leading-tight md:text-6xl">DreamPlay One Pro</h1>
-                            <p className="mt-5 max-w-2xl font-sans text-base leading-relaxed text-white/85 md:text-lg">
-                                Our flagship 88-key digital piano for serious pianists. Built with graded hammer action,
-                                triple-sensor precision, and the most advanced LED learning system we have ever made.
-                            </p>
+                {/* Hero — cinematic flagship reveal */}
+                <section className="relative flex min-h-[92vh] flex-col justify-end overflow-hidden bg-neutral-950 px-6 pb-20 pt-24 md:px-16">
+                    <div className="absolute inset-0 z-0">
+                        <Image
+                            src="/images/pro/nightmare-black-angled.jpg"
+                            alt="DreamPlay One Pro in Nightmare Black, cinematic lighting"
+                            fill
+                            priority
+                            className="object-cover opacity-60"
+                            sizes="100vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-950/30" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/70 via-transparent to-transparent" />
+                    </div>
 
-                            <div className="mt-8 flex flex-wrap gap-3">
-                                <span className="border border-white/25 bg-white/10 px-4 py-2 text-sm">Starting at $1,899</span>
-                                <span className="border border-white/25 bg-white/10 px-4 py-2 text-sm">Free Shipping</span>
-                                <span className="border border-white/25 bg-white/10 px-4 py-2 text-sm">No Tariff Fees</span>
+                    <div className="relative z-10 mx-auto w-full max-w-[1600px]">
+                        <p className="mb-6 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#c5a059]">
+                            Flagship Instrument
+                        </p>
+                        <h1 className="max-w-4xl font-serif text-5xl font-medium leading-[1.05] md:text-7xl lg:text-8xl">
+                            The absolute
+                            <br />
+                            <span className="italic text-white/70">standard.</span>
+                        </h1>
+                        <p className="mt-8 max-w-xl font-sans text-sm font-light leading-relaxed text-white/70 md:text-base">
+                            An uncompromising approach to touch, tone, and technology. The One Pro pairs pro-grade
+                            triple-sensor action and a 40W stereo array with severe, purposeful minimalism.
+                        </p>
+
+                        <div className="mt-12 flex flex-wrap items-end gap-8">
+                            <div>
+                                <span className="mb-3 block font-sans text-[10px] uppercase tracking-[0.25em] text-white/40">
+                                    Finishes
+                                </span>
+                                <div className="flex gap-3">
+                                    <div className="flex items-center gap-2.5 border border-white/20 px-4 py-2">
+                                        <span className="h-2.5 w-2.5 bg-[#0a0a0a] ring-1 ring-white/30" />
+                                        <span className="font-sans text-xs tracking-wide text-white/90">Nightmare Black</span>
+                                    </div>
+                                    <div className="flex items-center gap-2.5 border border-white/20 px-4 py-2">
+                                        <span className="h-2.5 w-2.5 bg-[#c5a059]" />
+                                        <span className="font-sans text-xs tracking-wide text-white/90">Aztec Gold</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="mt-8 flex flex-wrap items-center gap-4">
-                                <Link href="/customize" className="bg-white px-6 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-200">
-                                    Reserve DreamPlay One Pro
+                            <div className="flex flex-wrap gap-3">
+                                <Link
+                                    href="/customize"
+                                    className="bg-white px-7 py-4 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-neutral-950 transition hover:bg-[#c5a059] hover:text-neutral-950"
+                                >
+                                    Reserve One Pro
                                 </Link>
-                                <Link href="/how-it-works" className="border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
-                                    Find Your Size
+                                <Link
+                                    href="/how-it-works"
+                                    className="border border-white/30 px-7 py-4 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:border-white hover:bg-white/5"
+                                >
+                                    Find your size
                                 </Link>
                             </div>
                         </div>
 
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="relative min-h-[240px] overflow-hidden border border-white/15 bg-black/20">
-                                <Image
-                                    src="/images/pro/nightmare-black-angled.jpg"
-                                    alt="DreamPlay One Pro in Nightmare Black"
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, 50vw"
-                                />
+                        <div className="mt-16 flex items-center gap-8 font-sans text-[10px] uppercase tracking-[0.25em] text-white/40">
+                            <span>From $1,899</span>
+                            <span className="h-px w-8 bg-white/20" />
+                            <span>Preorder open</span>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Reassurance bar */}
+                <div className="flex flex-col items-center justify-between gap-3 border-y border-white/10 bg-neutral-900 px-6 py-5 font-sans text-[10px] uppercase tracking-[0.25em] text-white/55 md:flex-row md:px-16">
+                    <span>Global free shipping</span>
+                    <span className="hidden h-px w-10 bg-white/10 md:block" />
+                    <span>Zero tariff fees</span>
+                    <span className="hidden h-px w-10 bg-white/10 md:block" />
+                    <span>Fully refundable preorder</span>
+                </div>
+
+                {/* Engineering grid — light section */}
+                <section id="engineering" className="border-b border-black/10 bg-neutral-50 py-28 text-neutral-950 md:py-32">
+                    <div className="mx-auto max-w-[1600px] px-6 md:px-16">
+                        <div className="grid grid-cols-1 gap-0 lg:grid-cols-12">
+                            <div className="mb-16 lg:col-span-4 lg:mb-0 lg:pr-16">
+                                <p className="mb-6 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                                    01. Architecture
+                                </p>
+                                <h2 className="mb-6 font-serif text-4xl leading-tight md:text-5xl">
+                                    Engineered to
+                                    <br />
+                                    <span className="italic text-neutral-500">disappear.</span>
+                                </h2>
+                                <p className="mb-10 font-sans text-sm font-light leading-relaxed text-neutral-600">
+                                    The interface yields to the instrument. Every component has been rigorously machined
+                                    to serve the player, removing friction between intention and sound.
+                                </p>
+                                <div className="relative aspect-[4/5] overflow-hidden border border-black/10 bg-neutral-100">
+                                    <Image
+                                        src="/images/pro/nightmare-black-angled-2.jpg"
+                                        alt="DreamPlay One Pro key detail"
+                                        fill
+                                        className="object-cover grayscale"
+                                        sizes="(max-width: 1024px) 100vw, 33vw"
+                                    />
+                                </div>
                             </div>
-                            <div className="relative min-h-[240px] overflow-hidden border border-white/15 bg-black/20">
+
+                            <div className="grid grid-cols-1 border-l-0 border-t border-black/10 lg:col-span-8 md:grid-cols-2 md:border-l md:border-black/10">
+                                {engineeringPillars.map((pillar, idx) => {
+                                    const isLast = idx === engineeringPillars.length - 1
+                                    return (
+                                        <div
+                                            key={pillar.title}
+                                            className={`group border-b border-r-0 border-black/10 p-8 transition-colors hover:bg-black/[0.03] md:border-r md:p-10 ${
+                                                isLast ? "bg-neutral-950 text-neutral-50 hover:bg-neutral-900" : ""
+                                            }`}
+                                        >
+                                            <span
+                                                className={`mb-6 block font-serif text-3xl italic ${
+                                                    isLast ? "text-white/25" : "text-neutral-300"
+                                                }`}
+                                            >
+                                                {String(idx + 1).padStart(2, "0")}
+                                            </span>
+                                            <h3
+                                                className={`mb-3 font-sans text-xs font-semibold uppercase tracking-[0.2em] ${
+                                                    isLast ? "text-[#c5a059]" : "text-neutral-950"
+                                                }`}
+                                            >
+                                                {pillar.title}
+                                            </h3>
+                                            <p
+                                                className={`font-sans text-sm font-light leading-relaxed ${
+                                                    isLast ? "text-white/65" : "text-neutral-600"
+                                                }`}
+                                            >
+                                                {pillar.body}
+                                            </p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Scale / Ergonomics — dark */}
+                <section id="scale" className="border-b border-white/10 bg-neutral-900 py-28 text-neutral-50 md:py-32">
+                    <div className="mx-auto max-w-[1600px] px-6 md:px-16">
+                        <div className="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
+                            <div>
+                                <p className="mb-6 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-white/40">
+                                    02. Ergonomics
+                                </p>
+                                <h2 className="mb-6 font-serif text-4xl leading-tight md:text-5xl">
+                                    Scale dictated by
+                                    <br />
+                                    <span className="italic text-[#c5a059]">human anatomy.</span>
+                                </h2>
+                                <p className="mb-12 max-w-md font-sans text-sm font-light leading-relaxed text-white/60">
+                                    One size does not dictate brilliance. The One Pro is available in two keyboard
+                                    scales, optimized to eliminate tension across the full range of hand spans.
+                                </p>
+
+                                <div className="flex flex-col gap-5">
+                                    <div className="group relative flex items-center justify-between overflow-hidden border border-white/15 bg-neutral-950 px-8 py-6 transition-colors hover:border-[#c5a059]/50">
+                                        <span className="absolute right-0 top-0 h-full w-1 bg-[#c5a059]" />
+                                        <div>
+                                            <h3 className="mb-1 font-serif text-2xl">DS5.5</h3>
+                                            <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/45">
+                                                Ergonomic specification
+                                            </span>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="block font-sans text-xl font-light">140.7mm</span>
+                                            <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/35">
+                                                Octave span
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="group flex items-center justify-between border border-white/15 px-8 py-6 transition-colors hover:border-white/35">
+                                        <div>
+                                            <h3 className="mb-1 font-serif text-2xl">DS6.0</h3>
+                                            <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/45">
+                                                Concert specification
+                                            </span>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="block font-sans text-xl font-light">152.4mm</span>
+                                            <span className="font-sans text-[10px] uppercase tracking-[0.2em] text-white/35">
+                                                Octave span
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <p className="font-sans text-[11px] font-light italic text-white/40">
+                                        The DS5.5 scale allows pianists with smaller spans to execute tenth intervals
+                                        with the relaxed facility of a larger hand.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="relative aspect-square overflow-hidden border border-white/10 bg-neutral-950">
                                 <Image
                                     src="/images/pro/aztec-gold-full.jpg"
                                     alt="DreamPlay One Pro in Aztec Gold"
                                     fill
-                                    className="object-cover"
+                                    className="object-cover opacity-80"
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                 />
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="px-4 py-14 md:px-8 lg:px-12">
-                    <div className="mx-auto w-full max-w-7xl">
-                        <div className="mb-8">
-                            <p className="font-sans text-[11px] uppercase tracking-[0.25em] text-neutral-500">Key Features</p>
-                            <h2 className="mt-3 font-serif text-3xl md:text-4xl">Built for performance, precision, and learning</h2>
-                        </div>
-
-                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                            {featureList.map((feature) => (
-                                <div key={feature} className="border border-neutral-200 bg-white p-4 font-sans text-sm leading-relaxed shadow-sm">
-                                    {feature}
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/60 via-transparent to-transparent" />
+                                <div className="absolute left-6 top-6 font-sans text-[10px] uppercase tracking-[0.25em] text-white/60">
+                                    Tactile scale
                                 </div>
-                            ))}
-                        </div>
-
-                        <div className="mt-8 grid gap-5 md:grid-cols-2">
-                            <div className="border border-neutral-200 bg-white p-6">
-                                <h3 className="font-serif text-2xl">DS5.5</h3>
-                                <p className="mt-2 font-sans text-sm text-neutral-700">Octave width: 5.538 inches (140.7mm)</p>
-                                <p className="mt-2 font-sans text-sm text-neutral-700">Best for hand spans 6.0 to 7.6 inches.</p>
-                            </div>
-                            <div className="border border-neutral-200 bg-white p-6">
-                                <h3 className="font-serif text-2xl">DS6.0</h3>
-                                <p className="mt-2 font-sans text-sm text-neutral-700">Octave width: 6.000 inches (152.4mm)</p>
-                                <p className="mt-2 font-sans text-sm text-neutral-700">Best for hand spans 7.6 to 8.5 inches.</p>
+                                <div className="absolute bottom-6 left-6 right-6 flex justify-between border-t border-dashed border-white/25 pt-3 font-mono text-[9px] text-white/50">
+                                    <span>0mm</span>
+                                    <span>140.7</span>
+                                    <span>152.4mm</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <section className="bg-neutral-900 px-4 py-14 text-white md:px-8 lg:px-12">
-                    <div className="mx-auto w-full max-w-7xl">
-                        <p className="font-sans text-[11px] uppercase tracking-[0.25em] text-amber-300">Pricing</p>
-                        <h2 className="mt-3 font-serif text-3xl md:text-4xl">Choose keyboard-only or premium bundle</h2>
+                {/* Ecosystem / Learn app */}
+                <section className="border-b border-white/10 bg-neutral-950 py-28 text-neutral-50 md:py-32">
+                    <div className="mx-auto max-w-5xl px-6 text-center md:px-16">
+                        <p className="mb-6 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-white/35">
+                            03. Ecosystem
+                        </p>
+                        <h2 className="mb-8 font-serif text-4xl leading-tight md:text-6xl">
+                            Seamless sync.
+                            <br />
+                            <span className="italic text-white/60">Infinite flow.</span>
+                        </h2>
+                        <p className="mx-auto mb-16 max-w-2xl font-sans text-sm font-light leading-relaxed text-white/55">
+                            Lifetime access to the DreamPlay Learn app is included with every One Pro. Falling notes,
+                            sheet music mode, wait-for-correct, tempo control, and section looping — synced to the
+                            keybed LEDs in real time.
+                        </p>
 
-                        <div className="mt-8 grid gap-5 lg:grid-cols-2">
-                            <div className="border border-white/20 bg-white/5 p-6">
-                                <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/70">Keyboard Only</p>
-                                <h3 className="mt-3 font-serif text-2xl">DreamPlay One Pro</h3>
-                                <p className="mt-4 font-sans text-4xl font-semibold">$1,899</p>
-                                <p className="mt-2 font-sans text-sm text-white/80">MSRP $2,499</p>
-                                <p className="mt-4 font-sans text-sm text-white/80">Payment plan: $949 now, $950 before shipping.</p>
-                            </div>
-
-                            <div className="border border-white/20 bg-white/5 p-6">
-                                <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/70">Premium Bundle</p>
-                                <h3 className="mt-3 font-serif text-2xl">Keyboard + Stand + Triple Pedal + Bench</h3>
-                                <p className="mt-4 font-sans text-4xl font-semibold">$1,999</p>
-                                <p className="mt-4 font-sans text-sm text-white/80">Payment plan: $999 now, $1,000 before shipping.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="px-4 py-14 md:px-8 lg:px-12">
-                    <div className="mx-auto w-full max-w-7xl">
-                        <p className="font-sans text-[11px] uppercase tracking-[0.25em] text-neutral-500">Variants</p>
-                        <h2 className="mt-3 font-serif text-3xl md:text-4xl">Shopify-ready variant matrix</h2>
-
-                        <div className="mt-8 overflow-x-auto border border-neutral-200 bg-white">
-                            <table className="min-w-[980px] w-full border-collapse font-sans text-sm">
-                                <thead>
-                                    <tr className="border-b border-neutral-200 bg-neutral-100 text-left">
-                                        <th className="px-4 py-3">Variant</th>
-                                        <th className="px-4 py-3">Size</th>
-                                        <th className="px-4 py-3">Color</th>
-                                        <th className="px-4 py-3">Package</th>
-                                        <th className="px-4 py-3">Price</th>
-                                        <th className="px-4 py-3">Compare-at</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {variants.map((variant) => (
-                                        <tr key={variant.name} className="border-b border-neutral-100 align-top">
-                                            <td className="px-4 py-3">{variant.name}</td>
-                                            <td className="px-4 py-3">{variant.size}</td>
-                                            <td className="px-4 py-3">{variant.color}</td>
-                                            <td className="px-4 py-3">{variant.package}</td>
-                                            <td className="px-4 py-3">{variant.price}</td>
-                                            <td className="px-4 py-3">{variant.compareAt}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="bg-neutral-100 px-4 py-14 md:px-8 lg:px-12">
-                    <div className="mx-auto w-full max-w-7xl">
-                        <p className="font-sans text-[11px] uppercase tracking-[0.25em] text-neutral-500">Model Comparison</p>
-                        <h2 className="mt-3 font-serif text-3xl md:text-4xl">DreamPlay One vs DreamPlay One Pro</h2>
-
-                        <div className="mt-8 overflow-x-auto border border-neutral-200 bg-white">
-                            <table className="min-w-[760px] w-full border-collapse font-sans text-sm">
-                                <thead>
-                                    <tr className="border-b border-neutral-200 bg-neutral-100 text-left">
-                                        <th className="px-4 py-3">Specification</th>
-                                        <th className="px-4 py-3">DreamPlay One</th>
-                                        <th className="px-4 py-3">DreamPlay One Pro</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {comparisonRows.map((row) => (
-                                        <tr key={row.label} className="border-b border-neutral-100 align-top">
-                                            <td className="px-4 py-3 font-medium text-neutral-800">{row.label}</td>
-                                            <td className="px-4 py-3 text-neutral-700">{row.one}</td>
-                                            <td className="px-4 py-3 text-neutral-900">{row.pro}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="px-4 py-14 md:px-8 lg:px-12">
-                    <div className="mx-auto w-full max-w-7xl grid gap-8 lg:grid-cols-[1.1fr,0.9fr]">
-                        <div>
-                            <p className="font-sans text-[11px] uppercase tracking-[0.25em] text-neutral-500">Included Software</p>
-                            <h2 className="mt-3 font-serif text-3xl md:text-4xl">DreamPlay Learn app included free</h2>
-                            <ul className="mt-5 space-y-2 font-sans text-sm leading-relaxed text-neutral-700">
-                                <li>Sheet music mode and falling notes mode</li>
-                                <li>Wait-for-correct and tempo control</li>
-                                <li>Section looping with real-time LED sync</li>
-                                <li>Ideal for both beginners and advanced players</li>
-                            </ul>
-                        </div>
-
-                        <div className="relative min-h-[260px] overflow-hidden border border-neutral-200 bg-white">
+                        <div className="relative mx-auto aspect-[16/10] max-w-4xl overflow-hidden border border-white/10 bg-neutral-900">
                             <Image
                                 src="/images/learn/falling-notes-mode.png"
                                 alt="DreamPlay Learn app with falling notes mode"
                                 fill
                                 className="object-cover"
-                                sizes="(max-width: 768px) 100vw, 40vw"
+                                sizes="(max-width: 1024px) 100vw, 960px"
                             />
                         </div>
                     </div>
                 </section>
 
-                <section className="bg-neutral-950 px-4 py-14 text-white md:px-8 lg:px-12">
-                    <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+                {/* Specs / Comparison — light */}
+                <section id="specs" className="border-b border-black/10 bg-neutral-50 py-28 text-neutral-950 md:py-32">
+                    <div className="mx-auto max-w-[1600px] px-6 md:px-16">
+                        <div className="flex flex-col gap-16 lg:flex-row">
+                            <div className="lg:w-1/3">
+                                <p className="mb-6 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                                    04. Matrices
+                                </p>
+                                <h2 className="mb-6 font-serif text-4xl leading-tight">
+                                    Technical
+                                    <br />
+                                    <span className="italic text-neutral-500">specifications.</span>
+                                </h2>
+                                <p className="font-sans text-sm font-light leading-relaxed text-neutral-600">
+                                    The architecture mapped. A strict comparison of capabilities to define the exact
+                                    apparatus required for your environment.
+                                </p>
+                            </div>
+
+                            <div className="lg:w-2/3">
+                                <h3 className="mb-5 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-neutral-500">
+                                    Lineage comparison
+                                </h3>
+                                <div className="mb-16 overflow-x-auto border border-black/10 bg-white">
+                                    <table className="w-full min-w-[680px] border-collapse font-sans text-sm">
+                                        <thead>
+                                            <tr className="border-b border-black/10 bg-neutral-100 text-left">
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    Parameter
+                                                </th>
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    DreamPlay One
+                                                </th>
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#a38241]">
+                                                    DreamPlay One Pro
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {comparisonRows.map((row) => (
+                                                <tr key={row.label} className="border-b border-black/5 align-top last:border-b-0">
+                                                    <td className="px-5 py-4 font-sans text-xs font-medium uppercase tracking-wide text-neutral-800">
+                                                        {row.label}
+                                                    </td>
+                                                    <td className="px-5 py-4 font-sans text-sm font-light text-neutral-600">
+                                                        {row.one}
+                                                    </td>
+                                                    <td className="px-5 py-4 font-sans text-sm font-medium text-neutral-950">
+                                                        {row.pro}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <h3 className="mb-5 font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-neutral-500">
+                                    Variant matrix
+                                </h3>
+                                <div className="overflow-x-auto border border-black/10 bg-white">
+                                    <table className="w-full min-w-[920px] border-collapse font-sans text-sm">
+                                        <thead>
+                                            <tr className="border-b border-black/10 bg-neutral-100 text-left">
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    Variant
+                                                </th>
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    Size
+                                                </th>
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    Color
+                                                </th>
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    Package
+                                                </th>
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    Price
+                                                </th>
+                                                <th className="px-5 py-4 font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                                                    Compare-at
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {variants.map((variant) => (
+                                                <tr key={variant.name} className="border-b border-black/5 align-top last:border-b-0">
+                                                    <td className="px-5 py-4 font-sans text-sm text-neutral-800">{variant.name}</td>
+                                                    <td className="px-5 py-4 font-sans text-sm font-light text-neutral-600">{variant.size}</td>
+                                                    <td className="px-5 py-4 font-sans text-sm font-light text-neutral-600">{variant.color}</td>
+                                                    <td className="px-5 py-4 font-sans text-sm font-light text-neutral-600">{variant.package}</td>
+                                                    <td className="px-5 py-4 font-sans text-sm font-medium text-neutral-950">{variant.price}</td>
+                                                    <td className="px-5 py-4 font-sans text-sm font-light text-neutral-500">{variant.compareAt}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Pricing — dark, flagship moment */}
+                <section id="reserve" className="bg-neutral-950 py-28 text-neutral-50 md:py-32">
+                    <div className="mx-auto max-w-6xl px-6 md:px-16">
+                        <div className="mb-20 text-center">
+                            <p className="mb-4 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-white/35">
+                                05. Acquisition
+                            </p>
+                            <h2 className="font-serif text-5xl leading-tight md:text-7xl">
+                                Configure
+                                <br />
+                                <span className="italic text-[#c5a059]">the apparatus.</span>
+                            </h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            {/* Tier 1: Keyboard Only */}
+                            <div className="flex flex-col justify-between border border-white/15 bg-neutral-900/40 p-10 transition-colors hover:border-white/30">
+                                <div>
+                                    <h3 className="mb-2 font-serif text-3xl">Instrument Standard</h3>
+                                    <p className="mb-8 border-b border-white/10 pb-5 font-sans text-[11px] uppercase tracking-[0.2em] text-white/45">
+                                        Keyboard only
+                                    </p>
+
+                                    <div className="mb-2 font-serif text-5xl font-light tracking-tight">
+                                        $1,899
+                                        <span className="ml-2 font-sans text-sm italic tracking-normal text-white/35">USD</span>
+                                    </div>
+                                    <p className="mb-10 font-sans text-xs text-white/45">
+                                        Compare at $2,499 · Payment plan: $949 now, $950 before shipping
+                                    </p>
+
+                                    <ul className="mb-12 space-y-3 font-sans text-sm font-light text-white/70">
+                                        {keyboardOnlyIncludes.map((item) => (
+                                            <li key={item} className="flex items-start gap-3">
+                                                <span className="mt-[9px] h-px w-4 bg-[#c5a059]" />
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <Link
+                                    href="/customize"
+                                    className="block border border-white/30 py-4 text-center font-sans text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-white hover:text-neutral-950"
+                                >
+                                    Reserve Standard
+                                </Link>
+                            </div>
+
+                            {/* Tier 2: Premium Bundle */}
+                            <div className="relative flex flex-col justify-between border border-[#c5a059]/50 bg-neutral-950 p-10 shadow-[0_0_60px_rgba(197,160,89,0.06)] transition-colors hover:border-[#c5a059]">
+                                <div className="absolute right-10 top-0 -translate-y-1/2 bg-[#c5a059] px-3 py-1 font-sans text-[9px] font-bold uppercase tracking-[0.25em] text-neutral-950">
+                                    Flagship Configuration
+                                </div>
+
+                                <div>
+                                    <h3 className="mb-2 font-serif text-3xl text-[#c5a059]">Premium Ecosystem</h3>
+                                    <p className="mb-8 border-b border-[#c5a059]/20 pb-5 font-sans text-[11px] uppercase tracking-[0.2em] text-white/45">
+                                        Keyboard · Stand · Triple pedal · Bench
+                                    </p>
+
+                                    <div className="mb-2 font-serif text-5xl font-light tracking-tight text-white">
+                                        $1,999
+                                        <span className="ml-2 font-sans text-sm italic tracking-normal text-white/35">USD</span>
+                                    </div>
+                                    <p className="mb-10 font-sans text-xs text-white/45">
+                                        Payment plan: $999 now, $1,000 before shipping
+                                    </p>
+
+                                    <ul className="mb-12 space-y-3 font-sans text-sm font-light text-white/80">
+                                        {premiumBundleIncludes.map((item) => (
+                                            <li key={item} className="flex items-start gap-3">
+                                                <span className="mt-[9px] h-px w-4 bg-[#c5a059]" />
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <Link
+                                    href="/customize"
+                                    className="block bg-[#c5a059] py-4 text-center font-sans text-xs font-bold uppercase tracking-[0.2em] text-neutral-950 transition hover:bg-white"
+                                >
+                                    Reserve Bundle
+                                </Link>
+                            </div>
+                        </div>
+
+                        <p className="mt-14 text-center font-sans text-[10px] uppercase tracking-[0.25em] text-white/35">
+                            Reservations are fully refundable until shipment · Free global shipping · No tariff fees
+                        </p>
+                    </div>
+                </section>
+
+                {/* Final CTA */}
+                <section className="border-t border-white/10 bg-neutral-900 px-6 py-20 text-neutral-50 md:px-16">
+                    <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 md:flex-row md:items-center">
                         <div>
-                            <p className="font-sans text-[11px] uppercase tracking-[0.25em] text-amber-300">Ready to preorder?</p>
-                            <h2 className="mt-2 font-serif text-3xl md:text-4xl">DreamPlay One Pro is now available</h2>
-                            <p className="mt-3 max-w-2xl font-sans text-sm text-white/80">
-                                Product type: Digital Piano. Vendor: DreamPlay Pianos. Inventory tracking is enabled and preorder sales continue when out of stock.
+                            <p className="mb-3 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#c5a059]">
+                                Now reserving
+                            </p>
+                            <h2 className="font-serif text-3xl md:text-4xl">DreamPlay One Pro is available to preorder.</h2>
+                            <p className="mt-3 max-w-2xl font-sans text-sm font-light text-white/60">
+                                Production begins in the next build window. Secure your size, color, and package today.
                             </p>
                         </div>
 
                         <div className="flex flex-wrap gap-3">
-                            <Link href="/customize" className="bg-white px-6 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-200">
-                                Start Reservation
+                            <Link
+                                href="/customize"
+                                className="bg-white px-7 py-4 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-neutral-950 transition hover:bg-[#c5a059]"
+                            >
+                                Start reservation
                             </Link>
-                            <Link href="/contact" className="border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
-                                Contact Sales
+                            <Link
+                                href="/contact"
+                                className="border border-white/30 px-7 py-4 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-white/5"
+                            >
+                                Contact sales
                             </Link>
                         </div>
                     </div>

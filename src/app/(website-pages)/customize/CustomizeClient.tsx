@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import { getCountdownDate } from "@/actions/admin-actions";
 import { subscribeToNewsletter } from "@/actions/email-actions";
 import { trackEmailConversion } from "@/components/EmailTracker";
@@ -487,7 +487,7 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
 
     return (
         <div className="min-h-screen bg-white font-sans text-neutral-900 selection:bg-neutral-200">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             {/* --- FIXED FLOATING WIDGETS WRAPPER (below the header) --- */}
             <div className="fixed top-16 left-0 right-0 z-50 flex flex-col pointer-events-none">
@@ -574,7 +574,7 @@ export default function CustomizeClient({ urls, hiddenProducts }: CustomizeClien
                 </div>
             </div>
 
-            {/* Steps Sub-Navbar — fixed flush below the 64px SpecialOfferHeader */}
+            {/* Steps Sub-Navbar — fixed flush below the 64px Navbar */}
             <header id="sticky-nav" className="fixed top-16 left-0 right-0 z-[90] w-full bg-[#050505]/95 backdrop-blur-md border-b border-white/5 shadow-sm">
                 <div className="mx-auto max-w-7xl px-4 md:px-6">
                     <div className="flex h-12 md:h-14 items-center justify-between">

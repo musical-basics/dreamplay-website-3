@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AnimatedSection } from "@/components/animated-section";
 import { ArrowRight, CheckCircle2, Globe, MapPin } from "lucide-react";
@@ -9,7 +9,7 @@ import { ArrowRight, CheckCircle2, Globe, MapPin } from "lucide-react";
 export default function DSStandardContent() {
     return (
         <div className="min-h-screen font-sans selection:bg-white/20">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main className="pt-24">
 

@@ -1,5 +1,5 @@
 import { Playfair_Display, Inter } from "next/font/google"
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { getHiddenProducts } from "@/actions/admin-actions"
 
@@ -24,7 +24,7 @@ export default async function ParentsGuidePage() {
 
     return (
         <div className={`${playfair.variable} ${inter.variable} font-sans antialiased`}>
-            <SpecialOfferHeader />
+            <Navbar />
             <main>
                 <div className="relative z-10">
                     {/* 1. Hero Video specific to kids/parents */}

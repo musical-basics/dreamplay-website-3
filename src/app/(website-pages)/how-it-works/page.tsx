@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -84,7 +84,7 @@ export default function HowItWorksPage() {
 
     return (
         <div className="min-h-screen selection:bg-white/20">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main className="flex flex-col items-center">
 

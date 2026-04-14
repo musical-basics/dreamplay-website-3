@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import { submitContactForm } from "@/actions/email-actions";
@@ -59,7 +59,7 @@ export default function ContactPage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-white/20">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main>
                 {/* Hero */}

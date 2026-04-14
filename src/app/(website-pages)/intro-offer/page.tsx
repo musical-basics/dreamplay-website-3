@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { ChevronDown, ChevronRight, Play, ArrowRight, Send, Loader2, CheckCircle2, Smartphone, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import { CalculatorSection } from "@/components/how-it-works/calculator-section"
 import { LazyVideo } from "@/components/extended-offer/LazyVideo"
 import DonutChart from "@/components/DonutChart"
@@ -295,7 +295,7 @@ export default function IntroOfferPage() {
 
 
             {/* Header */}
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             {/* Dot navigation */}
             {(() => {

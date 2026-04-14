@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import VIPDashboardClient from "./VIPDashboardClient";
 import PromoCodeBox from "./PromoCodeBox";
@@ -21,7 +21,7 @@ export default async function VIPPage() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white/20">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main className="pt-32 pb-20">
                 <div className="max-w-6xl mx-auto px-6">

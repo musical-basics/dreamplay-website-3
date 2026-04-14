@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AnimatedSection } from "@/components/animated-section";
 import { ArrowRight, Quote } from "lucide-react";
@@ -39,7 +39,7 @@ export default function HistoricalFactsPage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-blue-500/20 bg-[#050505]">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main className="relative pt-[60px] md:pt-[80px]">
 

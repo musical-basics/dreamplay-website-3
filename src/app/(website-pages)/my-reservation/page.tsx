@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ReservationDecisionModule from "./ReservationDecisionModule";
 import ReservationPageClient from "./ReservationPageClient";
@@ -30,7 +30,7 @@ export default async function MyReservationPage() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white/20">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main className="pt-32 pb-24">
                 <div className="max-w-4xl mx-auto px-6">

@@ -1,5 +1,5 @@
 import { Playfair_Display, Inter } from "next/font/google"
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import { CrowdfundingSection } from "@/components/premium-offer/crowdfunding-section"
 import { StatsSection } from "@/components/premium-offer/stats-section"
 import { HeroSection } from "@/components/premium-offer/hero-section"
@@ -41,7 +41,7 @@ export default async function OldPremiumOfferPage() {
     const hiddenProducts = await getHiddenProducts()
     return (
         <div className={`${playfair.variable} ${inter.variable} font-sans antialiased`}>
-            <SpecialOfferHeader />
+            <Navbar />
             <main>
                 <section id="hero">
                     <CrowdfundingSection />

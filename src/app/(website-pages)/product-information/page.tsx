@@ -1,5 +1,5 @@
 import { Playfair_Display, Inter } from "next/font/google"
-import { SpecialOfferHeader } from "@/components/intro-offer/header"
+import { Navbar } from "@/components/Navbar"
 import { FeaturesGridSection } from "@/components/intro-offer/features-grid-section"
 import { FeaturesPianoSection } from "@/components/intro-offer/features-piano-section"
 import Footer from "@/components/Footer"
@@ -288,7 +288,7 @@ export default function ProductInformationPage() {
     return (
         <div className={`${playfair.variable} ${inter.variable} font-sans antialiased`}>
             <ProductJsonLd />
-            <SpecialOfferHeader />
+            <Navbar />
             <main>
                 {/* Hero */}
                 <section className="bg-neutral-950 pt-32 pb-20 md:pt-40 md:pb-28">

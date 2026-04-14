@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatedSection } from "@/components/animated-section";
@@ -209,7 +209,7 @@ export default function OurStoryPage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-blue-500/20">
-            <SpecialOfferHeader forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
+            <Navbar forceOpaque={true} darkMode={true} className="border-b border-white/10 bg-[#050505] backdrop-blur-md" />
 
             <main className="relative">
 

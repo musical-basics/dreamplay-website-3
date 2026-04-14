@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Star, ShieldCheck, Undo2, Truck, CheckCircle2, Loader2 } from "lucide-react";
-import { SpecialOfferHeader } from "@/components/intro-offer/header";
+import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { VARIANT_MAP } from "@/app/(website-pages)/customize/variant-map";
 import { trackEmailConversion } from "@/components/EmailTracker";
@@ -93,7 +93,7 @@ function CheckoutContent() {
 
     return (
         <div className="min-h-screen bg-white font-sans text-neutral-900 selection:bg-neutral-200">
-            <SpecialOfferHeader forceOpaque={true} darkMode={false} className="border-b border-neutral-200 bg-white" />
+            <Navbar forceOpaque={true} darkMode={false} className="border-b border-neutral-200 bg-white" />
 
             <main className="pt-28 pb-24 md:pt-32 max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 items-start">
