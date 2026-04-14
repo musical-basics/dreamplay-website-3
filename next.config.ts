@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
         hostname: 'dreamplaypianos.com',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
+    qualities: [75, 85, 90, 95, 100],
   },
   async redirects() {
     return [

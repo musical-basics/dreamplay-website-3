@@ -117,7 +117,7 @@ export default function DreamPlayProPage() {
                 <section className="relative flex min-h-[92vh] flex-col justify-end overflow-hidden bg-neutral-950 px-6 pb-20 pt-24 md:px-16">
                     <div className="absolute inset-0 z-0">
                         <Image
-                            src="/images/pro/nightmare-black-angled.jpg"
+                            src="/images/pro/nightmare-black-angled.png"
                             alt="DreamPlay One Pro in Nightmare Black, cinematic lighting"
                             fill
                             priority
@@ -212,7 +212,7 @@ export default function DreamPlayProPage() {
                                 </p>
                                 <div className="relative aspect-[4/5] overflow-hidden border border-black/10 bg-neutral-100">
                                     <Image
-                                        src="/images/pro/nightmare-black-angled-2.jpg"
+                                        src="/images/pro/nightmare-black-angled-2.png"
                                         alt="DreamPlay One Pro key detail"
                                         fill
                                         quality={90}
