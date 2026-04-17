@@ -17,6 +17,13 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import {
+    getPreorderByEmail as _getPreorderByEmail,
+    type PreorderOrder,
+} from '@/lib/preorders'
+
+// Re-export types so portal pages only need to import from this module
+export type { PreorderOrder }
 
 // Service-role client — server-side only
 const supabase = createClient(
@@ -94,6 +101,17 @@ export async function getReservationDecision(userId: string): Promise<DecisionRe
         console.error('[getReservationDecision] Unexpected error:', err)
         return null
     }
+}
+
+// ── Preorder lookup ────────────────────────────────────────────────────────
+
+/**
+ * Returns the primary preorder for a buyer's email using the service-role client.
+ * Selection is deterministic: full_payment/deposit_50 > waitlist, then newest date.
+ * Returns null if no record found or preorder_orders table is not yet populated.
+ */
+export async function getPreorderByEmail(email: string): Promise<PreorderOrder | null> {
+    return _getPreorderByEmail(email, supabase)
 }
 
 export async function saveReservationDecision(

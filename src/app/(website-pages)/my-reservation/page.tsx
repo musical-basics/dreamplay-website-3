@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ReservationDecisionModule from "./ReservationDecisionModule";
 import ReservationPageClient from "./ReservationPageClient";
-import { getReservationDecision, isBuyer } from "@/actions/reservation-actions";
+import { getReservationDecision, isBuyer, getPreorderByEmail } from "@/actions/reservation-actions";
 
 export const metadata = {
     title: "My Reservation | DreamPlay Pianos",
@@ -25,8 +25,11 @@ export default async function MyReservationPage() {
         redirect("/vip");
     }
 
-    // Fetch existing decision server-side
-    const existingDecision = await getReservationDecision(user.id);
+    // Fetch decision and preorder in parallel
+    const [existingDecision, preorderOrder] = await Promise.all([
+        getReservationDecision(user.id),
+        getPreorderByEmail(user.email),
+    ]);
 
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white/20">
@@ -51,6 +54,7 @@ export default async function MyReservationPage() {
                         userId={user.id}
                         email={user.email ?? null}
                         existingDecision={existingDecision}
+                        preorderOrder={preorderOrder}
                     />
 
                     {/* Divider */}

@@ -2,13 +2,68 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { saveReservationDecision, ReservationDecision, DecisionRecord } from "@/actions/reservation-actions";
+import { saveReservationDecision, ReservationDecision, DecisionRecord, PreorderOrder } from "@/actions/reservation-actions";
+import { PAYMENT_TYPE_LABELS } from "@/lib/preorders";
 import { CheckCircle2, Loader2, RotateCcw } from "lucide-react";
 
 interface ReservationDecisionModuleProps {
     userId: string;
     email: string | null;
     existingDecision: DecisionRecord | null;
+    preorderOrder?: PreorderOrder | null;
+}
+
+// ── Order Summary Card ──────────────────────────────────────────────────────
+// Shows the buyer's real imported preorder data above the decision choices.
+
+function OrderSummaryCard({
+    preorderOrder,
+    className = "",
+}: {
+    preorderOrder: PreorderOrder;
+    className?: string;
+}) {
+    const paymentLabel = PAYMENT_TYPE_LABELS[preorderOrder.payment_type] ?? preorderOrder.payment_type;
+    const amountDisplay = preorderOrder.total_paid_usd != null
+        ? `$${preorderOrder.total_paid_usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        : "—";
+    const statusDisplay =
+        preorderOrder.financial_status === "paid" ? "Paid"
+        : preorderOrder.financial_status === "authorized" ? "Authorized"
+        : preorderOrder.financial_status === "partially_refunded" ? "Partially Refunded"
+        : preorderOrder.financial_status ?? "—";
+
+    return (
+        <div className={`border border-white/10 bg-white/[0.02] p-6 ${className}`}>
+            <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40 mb-4">
+                Your Order
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Order</p>
+                    <p className="font-sans text-sm text-white font-medium">{preorderOrder.order_name}</p>
+                </div>
+                <div>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Amount Paid</p>
+                    <p className="font-sans text-sm text-white">{amountDisplay}</p>
+                </div>
+                <div>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Payment</p>
+                    <p className="font-sans text-sm text-white/80">{paymentLabel}</p>
+                </div>
+                <div>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Status</p>
+                    <p className="font-sans text-sm text-white/60">{statusDisplay}</p>
+                </div>
+            </div>
+            {preorderOrder.lineitem_name && (
+                <div className="mt-4 pt-4 border-t border-white/5">
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Product</p>
+                    <p className="font-sans text-xs text-white/60">{preorderOrder.lineitem_name}</p>
+                </div>
+            )}
+        </div>
+    );
 }
 
 const OPTIONS: {
@@ -69,6 +124,7 @@ export default function ReservationDecisionModule({
     userId,
     email,
     existingDecision,
+    preorderOrder,
 }: ReservationDecisionModuleProps) {
     const [selected, setSelected] = useState<ReservationDecision | null>(
         existingDecision?.decision ?? null
@@ -90,6 +146,13 @@ export default function ReservationDecisionModule({
 
         const result = await saveReservationDecision(userId, email, selected, {
             previous_decision: confirmed,
+            // Attach preorder traceability — stored in order_metadata for V1
+            ...(preorderOrder ? {
+                preorder_id: preorderOrder.id,
+                order_name: preorderOrder.order_name,
+                order_payment_type: preorderOrder.payment_type,
+                order_total_paid_usd: preorderOrder.total_paid_usd,
+            } : {}),
         });
 
         if (!result.success) {
@@ -107,6 +170,12 @@ export default function ReservationDecisionModule({
     if (confirmed && !isChanging) {
         const option = confirmedOption!;
         return (
+            <div>
+                {/* Order Summary */}
+                {preorderOrder && (
+                    <OrderSummaryCard preorderOrder={preorderOrder} className="mb-6" />
+                )}
+
             <div className="border border-white/10 bg-white/[0.03] p-8 md:p-10">
                 <div className="flex items-start gap-4 mb-6">
                     <div className="w-10 h-10 rounded-none border border-green-500/40 bg-green-500/10 flex items-center justify-center flex-shrink-0">
@@ -166,12 +235,18 @@ export default function ReservationDecisionModule({
                     Change my selection
                 </button>
             </div>
+            </div>
         );
     }
 
     // ── Selection State ──
     return (
         <div>
+            {/* Order Summary */}
+            {preorderOrder && (
+                <OrderSummaryCard preorderOrder={preorderOrder} className="mb-8" />
+            )}
+
             {/* Update Header */}
             <div className="mb-10 border-l-4 border-amber-500/60 pl-6">
                 <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-amber-400/80 mb-3">
