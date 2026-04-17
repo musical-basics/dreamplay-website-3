@@ -133,7 +133,7 @@ export default async function MyReservationPage() {
                     <div className="border border-white/5 bg-white/[0.02] p-8 text-center mb-8">
                         <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/30 mb-3">Questions?</p>
                         <p className="font-sans text-sm text-white/50 mb-5 max-w-md mx-auto">
-                            If you have any questions about your reservation or the options above, please reach out — we're happy to help.
+                            If you have any questions about your reservation or the options above, please reach out — we&apos;re happy to help.
                         </p>
                         <a
                             href="/contact"

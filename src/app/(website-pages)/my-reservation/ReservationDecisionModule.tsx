@@ -254,7 +254,7 @@ export default function ReservationDecisionModule({
                 </p>
                 <p className="font-sans text-sm text-white/70 leading-relaxed max-w-2xl">
                     Building a new acoustic digital piano keyboard from scratch has taken longer than any of us
-                    anticipated. We've been honest with ourselves — the revised delivery target is{" "}
+                    anticipated. We&apos;ve been honest with ourselves — the revised delivery target is{" "}
                     <strong className="text-white">Q4 2026</strong>. We deeply value your trust and early
                     support, and we want to make sure you have a clear choice about what happens next.
                 </p>
@@ -282,7 +282,6 @@ export default function ReservationDecisionModule({
             <div className="space-y-4 mb-8">
                 {OPTIONS.map((option) => {
                     const isSelected = selected === option.value;
-                    const isConfirmed = confirmed === option.value && !isChanging;
                     const isDark = option.dark;
 
                     return (

@@ -50,6 +50,20 @@ const DECISION_EMOJI: Record<ReservationDecision, string> = {
 export async function isBuyer(email: string): Promise<boolean> {
     const normalizedEmail = email.toLowerCase().trim()
     try {
+        const { data: preorderData, error: preorderError } = await supabase
+            .from('preorder_orders')
+            .select('id')
+            .eq('email', normalizedEmail)
+            .limit(1)
+
+        if (preorderData && preorderData.length > 0) {
+            return true
+        }
+
+        if (preorderError) {
+            console.warn('[isBuyer] preorder_orders lookup fallback:', preorderError.message)
+        }
+
         const { data, error } = await supabase
             .from('buyer_emails')
             .select('email')
@@ -62,8 +76,11 @@ export async function isBuyer(email: string): Promise<boolean> {
         }
 
         return !!data
-    } catch (err: any) {
-        console.error('[isBuyer] Unexpected error:', err?.message)
+    } catch (err: unknown) {
+        console.error(
+            '[isBuyer] Unexpected error:',
+            err instanceof Error ? err.message : String(err)
+        )
         return false
     }
 }
@@ -72,13 +89,19 @@ export async function isBuyer(email: string): Promise<boolean> {
 
 export interface DecisionRecord {
     id: string
+    preorder_id?: string | null
     user_id: string
     email: string | null
     decision: ReservationDecision
     selected_at: string
-    order_metadata: Record<string, any>
+    order_metadata: Record<string, unknown>
     created_at: string
     updated_at: string
+}
+
+export interface ReservationOrderMetadata extends Record<string, unknown> {
+    preorder_id?: string
+    previous_decision?: ReservationDecision | null
 }
 
 export async function getReservationDecision(userId: string): Promise<DecisionRecord | null> {
@@ -118,7 +141,7 @@ export async function saveReservationDecision(
     userId: string,
     email: string | null,
     decision: ReservationDecision,
-    orderMetadata?: Record<string, any>
+    orderMetadata?: ReservationOrderMetadata
 ): Promise<{ success: boolean; error?: string }> {
     try {
         const { data: existing } = await supabase
@@ -128,46 +151,56 @@ export async function saveReservationDecision(
             .maybeSingle()
 
         const now = new Date().toISOString()
+        const normalizedMetadata = orderMetadata ?? {}
+        const preorderId =
+            typeof normalizedMetadata.preorder_id === 'string'
+                ? normalizedMetadata.preorder_id
+                : null
 
-        if (existing?.id) {
-            const { error } = await supabase
-                .from('reservation_decisions')
-                .update({
-                    decision,
-                    email,
-                    selected_at: now,
-                    order_metadata: orderMetadata ?? {},
-                    updated_at: now,
-                })
-                .eq('id', existing.id)
+        const buildPayload = (includePreorderId: boolean) => ({
+            decision,
+            email,
+            selected_at: now,
+            order_metadata: normalizedMetadata,
+            updated_at: now,
+            ...(includePreorderId && preorderId ? { preorder_id: preorderId } : {}),
+        })
 
-            if (error) {
-                console.error('[saveReservationDecision] Update error:', error.message)
-                return { success: false, error: error.message }
+        const persistDecision = async (includePreorderId: boolean) => {
+            const payload = buildPayload(includePreorderId)
+
+            if (existing?.id) {
+                return supabase
+                    .from('reservation_decisions')
+                    .update(payload)
+                    .eq('id', existing.id)
             }
-        } else {
-            const { error } = await supabase
-                .from('reservation_decisions')
-                .insert({
-                    user_id: userId,
-                    email,
-                    decision,
-                    selected_at: now,
-                    order_metadata: orderMetadata ?? {},
-                    created_at: now,
-                    updated_at: now,
-                })
 
-            if (error) {
-                console.error('[saveReservationDecision] Insert error:', error.message)
-                return { success: false, error: error.message }
-            }
+            return supabase.from('reservation_decisions').insert({
+                user_id: userId,
+                created_at: now,
+                ...payload,
+            })
+        }
+
+        let { error } = await persistDecision(Boolean(preorderId))
+
+        if (error && preorderId && /preorder_id/i.test(error.message)) {
+            console.warn(
+                '[saveReservationDecision] preorder_id column unavailable, retrying with order_metadata only'
+            )
+            ;({ error } = await persistDecision(false))
+        }
+
+        if (error) {
+            console.error('[saveReservationDecision] Persist error:', error.message)
+            return { success: false, error: error.message }
         }
 
         // Fire-and-forget both emails — failures don't block buyer confirmation
         if (email) {
             Promise.all([
-                sendTeamNotification(email, decision, orderMetadata),
+                sendTeamNotification(email, decision, normalizedMetadata),
                 sendBuyerConfirmation(email, decision),
             ]).catch((err) =>
                 console.error('[saveReservationDecision] Email error (non-blocking):', err)
@@ -175,9 +208,10 @@ export async function saveReservationDecision(
         }
 
         return { success: true }
-    } catch (err: any) {
-        console.error('[saveReservationDecision] Unexpected error:', err?.message)
-        return { success: false, error: err?.message ?? 'Unknown error' }
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Unknown error'
+        console.error('[saveReservationDecision] Unexpected error:', message)
+        return { success: false, error: message }
     }
 }
 
@@ -199,7 +233,7 @@ export async function saveReservationDecision(
 async function sendTeamNotification(
     buyerEmail: string,
     decision: ReservationDecision,
-    metadata?: Record<string, any>
+    metadata?: ReservationOrderMetadata
 ): Promise<void> {
     if (!process.env.RESEND_API_KEY) return
 
@@ -207,8 +241,12 @@ async function sendTeamNotification(
     const label = DECISION_LABELS[decision]
     const emoji = DECISION_EMOJI[decision]
     const timestamp = new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
-    const previousLabel = metadata?.previous_decision
-        ? ` (changed from: ${DECISION_LABELS[metadata.previous_decision as ReservationDecision]})`
+    const previousDecision =
+        metadata?.previous_decision && metadata.previous_decision in DECISION_LABELS
+            ? metadata.previous_decision
+            : null
+    const previousLabel = previousDecision
+        ? ` (changed from: ${DECISION_LABELS[previousDecision]})`
         : ''
 
     await resend.emails.send({
@@ -274,11 +312,8 @@ const CONFIRMATION_COPY: Record<ReservationDecision, { subject: string; headline
                 Your reservation is locked in. Your Founder's pricing is protected, and your spot in
                 the first production run is secure. We're grateful for your continued trust.
             </p>
-                Your reservation is locked in. Your Founder\'s pricing is protected, and your spot in
-                the first production run is secure. We\'re grateful for your continued trust.
-            </p>
             <p style="margin: 0 0 16px; color: #444; line-height: 1.6;">
-                DreamPlay One is on track for <strong>Q4 2026</strong> delivery. We\'ll keep you updated
+                DreamPlay One is on track for <strong>Q4 2026</strong> delivery. We'll keep you updated
                 as we hit major milestones: tooling, assembly, and delivery.
             </p>
         `,

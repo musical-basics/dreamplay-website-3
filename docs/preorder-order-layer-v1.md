@@ -30,7 +30,7 @@ This replaces the fully static portal experience — where decision choices were
 
 | File | Change |
 |---|---|
-| `src/actions/reservation-actions.ts` | Added `getPreorderByEmail()` wrapper using service-role client; re-exports `PreorderOrder` type |
+| `src/actions/reservation-actions.ts` | Added `getPreorderByEmail()` wrapper, preorder-aware buyer lookup, and preorder-linked decision persistence |
 | `src/app/(website-pages)/my-reservation/page.tsx` | Fetches preorder in parallel with decision; passes to module |
 | `src/app/(website-pages)/my-reservation/ReservationDecisionModule.tsx` | Accepts `preorderOrder` prop; shows `OrderSummaryCard`; attaches preorder metadata to decision saves |
 
@@ -90,7 +90,7 @@ Payment type breakdown:
 | `lineitem_name` | TEXT | Raw Shopify lineitem string |
 | `product_line` | TEXT | `pro` / `bundle` / `keyboard_only` / `one` / `unknown` |
 | `size_variant` | TEXT | `DS5.5` / `DS6.0` / null |
-| `finish` | TEXT | `Black` / `White` / `Midnight Black` / `Aztec Gold` / null |
+| `finish` | TEXT | `Black` / `White` / `Midnight Black` / `Nightmare Black` / `Aztec Gold` / null |
 
 RLS: authenticated users can only read rows where `email = lower(auth.email())`. All writes use service role.
 
@@ -100,7 +100,7 @@ RLS: authenticated users can only read rows where `email = lower(auth.email())`.
 
 - **payment_type is derived from `lineitem_name`**, not the CSV column. The CSV uses `half_reservation`; the internal V1 canonical value is `deposit_50`. See `derivePaymentType()` in `src/lib/preorders.ts`.
 - **Amount paid comes from `Total`** (the `total_paid_usd` column), not inferred from current product pricing.
-- **Aztec Gold and Nightmare Black are Pro-only.** These finishes only appear in lineitem names that also contain `Pro`, so `parseProductMeta()` naturally maps them to `product_line=pro`.
+- **Aztec Gold and Nightmare Black are Pro-only.** `parseProductMeta()` preserves both finishes explicitly and maps those lineitems to `product_line=pro`.
 - **Primary preorder selection** for buyers with multiple orders is deterministic:
   1. `full_payment` or `deposit_50` wins over `waitlist_reservation`
   2. Tie-break: newest `created_at`
@@ -111,7 +111,7 @@ RLS: authenticated users can only read rows where `email = lower(auth.email())`.
 ## Blockers / limitations for V1
 
 - **Supabase credentials not available in this env** — migrations and data import must be run manually.
-- The `preorder_id` FK on `reservation_decisions` requires migration 2 to be run. For V1, `preorder_id` is also stored in `order_metadata` (JSONB) as a backward-compatible fallback, so decision saves work before/after migration.
+- The `preorder_id` FK on `reservation_decisions` requires migration 2 to be run. When that column exists, decision saves now write the real FK. For V1 safety, `preorder_id` is also stored in `order_metadata` (JSONB), and the server action retries without the FK column if the migration has not been applied yet.
 - If `preorder_orders` is empty (migration not yet run), `getPreorderByEmail()` returns `null` and the portal renders without the order summary card — graceful degradation.
 - This is a local snapshot import, not a live Shopify sync. Future V2 work should add a real Shopify Admin API webhook or polling sync.
 
@@ -125,4 +125,4 @@ No Supabase needed:
 npx tsx scripts/verify-preorder-logic.ts
 ```
 
-Expected: `All checks passed. 23 passed, 0 failed`
+Expected: `All checks passed. 26 passed, 0 failed`

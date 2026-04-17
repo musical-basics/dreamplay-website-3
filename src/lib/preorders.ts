@@ -52,8 +52,8 @@ export interface PreorderOrder {
 // Source of truth: lineitem_name from Shopify (NOT the CSV payment_type column).
 // The CSV uses 'half_reservation'; the V1 internal canonical value is 'deposit_50'.
 
-export function derivePaymentType(linitemName: string): PaymentType {
-    const lower = linitemName.toLowerCase()
+export function derivePaymentType(lineitemName: string): PaymentType {
+    const lower = lineitemName.toLowerCase()
     if (lower.includes('waitlist')) return 'waitlist_reservation'
     if (lower.includes('50% reservation') || lower.includes('50% deposit')) return 'deposit_50'
     return 'full_payment'
@@ -67,29 +67,30 @@ export interface ProductMeta {
     finish: string | null
 }
 
-export function parseProductMeta(linitemName: string): ProductMeta {
+export function parseProductMeta(lineitemName: string): ProductMeta {
     // Product line — order matters: check Pro before generic One
     let product_line: ProductLine = 'unknown'
-    if (/pro keyboard|one pro/i.test(linitemName)) {
+    if (/pro keyboard|one pro/i.test(lineitemName)) {
         product_line = 'pro'
-    } else if (/piano bundle/i.test(linitemName)) {
+    } else if (/piano bundle/i.test(lineitemName)) {
         product_line = 'bundle'
-    } else if (/keyboard only/i.test(linitemName)) {
+    } else if (/keyboard only/i.test(lineitemName)) {
         product_line = 'keyboard_only'
-    } else if (/one keyboard|dreamplay one/i.test(linitemName)) {
+    } else if (/one keyboard|dreamplay one/i.test(lineitemName)) {
         product_line = 'one'
     }
 
     // Size variant
-    const sizeMatch = linitemName.match(/DS(5\.5|6\.0)/i)
+    const sizeMatch = lineitemName.match(/DS(5\.5|6\.0)/i)
     const size_variant = sizeMatch ? `DS${sizeMatch[1]}` : null
 
-    // Finish — Midnight Black must be tested before plain Black
+    // Finish — specific black variants must be tested before plain Black
     let finish: string | null = null
-    if (/midnight black/i.test(linitemName)) finish = 'Midnight Black'
-    else if (/aztec gold/i.test(linitemName)) finish = 'Aztec Gold'
-    else if (/\bblack\b/i.test(linitemName)) finish = 'Black'
-    else if (/\bwhite\b/i.test(linitemName)) finish = 'White'
+    if (/nightmare black/i.test(lineitemName)) finish = 'Nightmare Black'
+    else if (/midnight black/i.test(lineitemName)) finish = 'Midnight Black'
+    else if (/aztec gold/i.test(lineitemName)) finish = 'Aztec Gold'
+    else if (/\bblack\b/i.test(lineitemName)) finish = 'Black'
+    else if (/\bwhite\b/i.test(lineitemName)) finish = 'White'
 
     return { product_line, size_variant, finish }
 }

@@ -101,10 +101,10 @@ async function main() {
     console.log(`Parsed ${rows.length} rows`)
 
     const records = rows.map((row) => {
-        const linitemName = row['lineitem_name'] ?? ''
+        const lineitemName = row['lineitem_name'] ?? ''
         // Derive payment_type from lineitem_name (NOT from CSV payment_type column)
-        const paymentType = derivePaymentType(linitemName)
-        const { product_line, size_variant, finish } = parseProductMeta(linitemName)
+        const paymentType = derivePaymentType(lineitemName)
+        const { product_line, size_variant, finish } = parseProductMeta(lineitemName)
 
         return {
             order_name: row['order_name'] ?? '',
@@ -119,7 +119,7 @@ async function main() {
             total_paid_usd: row['total_paid_usd'] ? parseFloat(row['total_paid_usd']) : null,
             payment_type: paymentType,
             is_reservation: row['is_reservation']?.toLowerCase() === 'true',
-            lineitem_name: linitemName || null,
+            lineitem_name: lineitemName || null,
             product_line,
             size_variant,
             finish,

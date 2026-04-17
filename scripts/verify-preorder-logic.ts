@@ -177,7 +177,7 @@ function main() {
     // (these finishes only appear in lineitem names that also contain "Pro")
     const nightmare = parseProductMeta('DreamPlay One Pro Keyboard - Nightmare Black')
     expect('Nightmare Black in Pro name → product_line=pro', nightmare.product_line, 'pro')
-    expect('Nightmare Black → finish=Black (base test)', parseProductMeta('DreamPlay Piano Bundle - DS5.5 / Black').finish, 'Black')
+    expect('Nightmare Black → finish=Nightmare Black', nightmare.finish, 'Nightmare Black')
 
     // ── 3. Primary preorder selection for duplicate-email cases ───────────
 
