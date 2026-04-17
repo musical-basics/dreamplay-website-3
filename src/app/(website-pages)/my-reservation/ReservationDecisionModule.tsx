@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { saveReservationDecision, ReservationDecision, DecisionRecord, PreorderOrder } from "@/actions/reservation-actions";
-import { PAYMENT_TYPE_LABELS } from "@/lib/preorders";
+import { FINANCIAL_STATUS_LABELS, PAYMENT_TYPE_LABELS, getCurrentReservationDisplay } from "@/lib/preorders";
 import { CheckCircle2, Loader2, RotateCcw } from "lucide-react";
 
 interface ReservationDecisionModuleProps {
@@ -27,41 +27,38 @@ function OrderSummaryCard({
     const amountDisplay = preorderOrder.total_paid_usd != null
         ? `$${preorderOrder.total_paid_usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
         : "—";
-    const statusDisplay =
-        preorderOrder.financial_status === "paid" ? "Paid"
-        : preorderOrder.financial_status === "authorized" ? "Authorized"
-        : preorderOrder.financial_status === "partially_refunded" ? "Partially Refunded"
-        : preorderOrder.financial_status ?? "—";
+    const statusDisplay = preorderOrder.financial_status
+        ? FINANCIAL_STATUS_LABELS[preorderOrder.financial_status] ?? preorderOrder.financial_status
+        : "—";
+    const reservationDisplay = getCurrentReservationDisplay(preorderOrder);
 
     return (
         <div className={`border border-white/10 bg-white/[0.02] p-6 ${className}`}>
             <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40 mb-4">
-                Your Order
+                Reservation Summary
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div>
-                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Order</p>
-                    <p className="font-sans text-sm text-white font-medium">{preorderOrder.order_name}</p>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Preorder Status</p>
+                    <p className="font-sans text-sm text-white/70">{statusDisplay}</p>
                 </div>
                 <div>
                     <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Amount Paid</p>
                     <p className="font-sans text-sm text-white">{amountDisplay}</p>
                 </div>
                 <div>
-                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Payment</p>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Payment Type</p>
                     <p className="font-sans text-sm text-white/80">{paymentLabel}</p>
                 </div>
                 <div>
-                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Status</p>
-                    <p className="font-sans text-sm text-white/60">{statusDisplay}</p>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Current Reservation</p>
+                    <p className="font-sans text-sm text-white">{reservationDisplay.display}</p>
+                </div>
+                <div>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Reservation Reference</p>
+                    <p className="font-sans text-sm text-white font-medium">{preorderOrder.order_name}</p>
                 </div>
             </div>
-            {preorderOrder.lineitem_name && (
-                <div className="mt-4 pt-4 border-t border-white/5">
-                    <p className="font-sans text-[10px] uppercase tracking-[0.15em] text-white/30 mb-1">Product</p>
-                    <p className="font-sans text-xs text-white/60">{preorderOrder.lineitem_name}</p>
-                </div>
-            )}
         </div>
     );
 }

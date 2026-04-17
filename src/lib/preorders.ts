@@ -1,13 +1,14 @@
 /**
  * preorders.ts
- * Internal preorder order layer — types, parsing, and DB lookup for V1.
+ * Internal preorder order layer — types, parsing, display helpers, and DB lookup for V1.
  *
- * Pure parsing functions (derivePaymentType, parseProductMeta, paymentTypePriority)
+ * Pure helpers (derivePaymentType, parseProductMeta, getCurrentReservationDisplay,
+ * paymentTypePriority)
  * are separated from DB queries so they can be imported both in server actions
  * and in standalone scripts (import, verify) without pulling in Next.js context.
  *
  * Primary preorder selection rules (deterministic):
- *   1. full_payment or deposit_50 > waitlist_reservation
+ *   1. full_payment > deposit_50 > waitlist_reservation
  *   2. Within the same tier, prefer the newest created_at date.
  */
 
@@ -67,6 +68,16 @@ export interface ProductMeta {
     finish: string | null
 }
 
+export type ReservationDetailLevel = 'fully_parsed' | 'partially_parsed' | 'none'
+
+export interface CurrentReservationDisplay {
+    normalized_label: string | null
+    ds_size: string | null
+    finish: string | null
+    detail_level: ReservationDetailLevel
+    display: string
+}
+
 export function parseProductMeta(lineitemName: string): ProductMeta {
     // Product line — order matters: check Pro before generic One
     let product_line: ProductLine = 'unknown'
@@ -99,8 +110,97 @@ export function parseProductMeta(lineitemName: string): ProductMeta {
 // Lower = higher priority.
 
 export function paymentTypePriority(pt: PaymentType): number {
-    if (pt === 'full_payment' || pt === 'deposit_50') return 0
-    return 1 // waitlist_reservation
+    if (pt === 'full_payment') return 0
+    if (pt === 'deposit_50') return 1
+    return 2 // waitlist_reservation
+}
+
+type ReservationDisplayInput = Pick<
+    PreorderOrder,
+    'payment_type' | 'lineitem_name' | 'size_variant' | 'finish' | 'product_line'
+>
+
+/**
+ * Returns a clean buyer-facing reservation label based only on fields we can
+ * parse safely. This intentionally strips promo/date noise from raw line items.
+ */
+export function getNormalizedReservationLabel(
+    order: ReservationDisplayInput
+): string | null {
+    const lineitemName = order.lineitem_name?.trim() ?? ''
+
+    if (/waitlist/i.test(lineitemName) || order.payment_type === 'waitlist_reservation') {
+        return 'DreamPlay waitlist reservation'
+    }
+
+    if (/pro keyboard/i.test(lineitemName)) {
+        return 'DreamPlay One Pro Keyboard'
+    }
+
+    if (/piano bundle/i.test(lineitemName) || order.product_line === 'bundle') {
+        return 'DreamPlay Piano Bundle'
+    }
+
+    if (/keyboard only/i.test(lineitemName) || order.product_line === 'keyboard_only') {
+        return 'DreamPlay One Keyboard Only'
+    }
+
+    if (/one keyboard/i.test(lineitemName)) {
+        return 'DreamPlay One Keyboard'
+    }
+
+    if (/one pro/i.test(lineitemName) || order.product_line === 'pro') {
+        return 'DreamPlay One Pro'
+    }
+
+    if (/dreamplay one/i.test(lineitemName) || order.product_line === 'one') {
+        return 'DreamPlay One'
+    }
+
+    if (
+        /50% reservation|50% deposit/i.test(lineitemName) ||
+        order.payment_type === 'deposit_50'
+    ) {
+        return 'DreamPlay reservation'
+    }
+
+    return null
+}
+
+export function getCurrentReservationDisplay(
+    order: ReservationDisplayInput
+): CurrentReservationDisplay {
+    const normalized_label = getNormalizedReservationLabel(order)
+    const ds_size = order.size_variant?.trim() ? order.size_variant : null
+    const finish = order.finish?.trim() ? order.finish : null
+
+    if (normalized_label && ds_size && finish) {
+        return {
+            normalized_label,
+            ds_size,
+            finish,
+            detail_level: 'fully_parsed',
+            display: `${normalized_label} · ${ds_size} · ${finish}`,
+        }
+    }
+
+    if (normalized_label) {
+        return {
+            normalized_label,
+            ds_size,
+            finish,
+            detail_level: 'partially_parsed',
+            display: normalized_label,
+        }
+    }
+
+    return {
+        normalized_label: null,
+        ds_size,
+        finish,
+        detail_level: 'none',
+        display: 'Selection not yet confirmed',
+    }
 }
 
 // ── Primary preorder lookup ────────────────────────────────────────────────
@@ -108,7 +208,7 @@ export function paymentTypePriority(pt: PaymentType): number {
 /**
  * Returns the single "primary" preorder for a buyer email.
  * When multiple orders share the same normalized email, selection is deterministic:
- *   1. full_payment or deposit_50 wins over waitlist_reservation
+ *   1. full_payment wins over deposit_50, which wins over waitlist_reservation
  *   2. Tie-break: newest created_at
  *
  * Requires a Supabase client with read access to preorder_orders.
@@ -134,7 +234,7 @@ export async function getPreorderByEmail(
 
         const orders = data as PreorderOrder[]
 
-        // Sort: lower rank (paid/deposit) first, then newest created_at
+        // Sort: lower rank first (full > deposit > waitlist), then newest created_at
         orders.sort((a, b) => {
             const rankDiff = paymentTypePriority(a.payment_type) - paymentTypePriority(b.payment_type)
             if (rankDiff !== 0) return rankDiff

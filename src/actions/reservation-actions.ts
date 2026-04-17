@@ -130,7 +130,7 @@ export async function getReservationDecision(userId: string): Promise<DecisionRe
 
 /**
  * Returns the primary preorder for a buyer's email using the service-role client.
- * Selection is deterministic: full_payment/deposit_50 > waitlist, then newest date.
+ * Selection is deterministic: full_payment > deposit_50 > waitlist, then newest date.
  * Returns null if no record found or preorder_orders table is not yet populated.
  */
 export async function getPreorderByEmail(email: string): Promise<PreorderOrder | null> {

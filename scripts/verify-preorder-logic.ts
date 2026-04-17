@@ -10,8 +10,9 @@
  * Checks:
  *   1. derivePaymentType correctness across all 56 rows
  *   2. parseProductMeta spot checks
- *   3. Primary preorder selection for known duplicate-email cases
- *   4. Pro-only finish gate: Aztec Gold and Nightmare Black → product_line=pro
+ *   3. Current reservation display formatting
+ *   4. Primary preorder selection for known duplicate-email cases
+ *   5. Pro-only finish gate: Aztec Gold and Nightmare Black → product_line=pro
  */
 
 import * as fs from 'fs'
@@ -19,6 +20,7 @@ import * as path from 'path'
 import {
     derivePaymentType,
     parseProductMeta,
+    getCurrentReservationDisplay,
     paymentTypePriority,
     type PaymentType,
     type PreorderOrder,
@@ -179,9 +181,73 @@ function main() {
     expect('Nightmare Black in Pro name → product_line=pro', nightmare.product_line, 'pro')
     expect('Nightmare Black → finish=Nightmare Black', nightmare.finish, 'Nightmare Black')
 
-    // ── 3. Primary preorder selection for duplicate-email cases ───────────
+    // ── 3. Current reservation display formatting ────────────────────────
 
-    console.log('\n── 3. Primary preorder selection (duplicate emails) ──')
+    console.log('\n── 3. Current reservation display formatting ──')
+
+    const fullyParsedDisplay = getCurrentReservationDisplay({
+        payment_type: 'full_payment',
+        lineitem_name: 'DreamPlay Piano Bundle - DS5.5 / Black',
+        size_variant: 'DS5.5',
+        finish: 'Black',
+        product_line: 'bundle',
+    })
+    expect(
+        'Fully parsed reservation display',
+        fullyParsedDisplay.display,
+        'DreamPlay Piano Bundle · DS5.5 · Black'
+    )
+
+    const partialDisplay = getCurrentReservationDisplay({
+        payment_type: 'waitlist_reservation',
+        lineitem_name: 'DreamPlay Waitlist Reservation',
+        size_variant: null,
+        finish: null,
+        product_line: 'unknown',
+    })
+    expect(
+        'Partially parsed reservation display',
+        partialDisplay.display,
+        'DreamPlay waitlist reservation'
+    )
+
+    const noSafeDetailDisplay = getCurrentReservationDisplay({
+        payment_type: 'full_payment',
+        lineitem_name: null,
+        size_variant: null,
+        finish: null,
+        product_line: 'unknown',
+    })
+    expect(
+        'No safe selection detail fallback',
+        noSafeDetailDisplay.display,
+        'Selection not yet confirmed'
+    )
+
+    // ── 4. Primary preorder selection for duplicate-email cases ───────────
+
+    console.log('\n── 4. Primary preorder selection (duplicate emails) ──')
+
+    const mixedPriorityPrimary = selectPrimary([
+        { order_name: '#deposit', payment_type: 'deposit_50', created_at: '2026-04-17T00:00:00.000Z' },
+        { order_name: '#full', payment_type: 'full_payment', created_at: '2026-04-16T00:00:00.000Z' },
+        { order_name: '#waitlist', payment_type: 'waitlist_reservation', created_at: '2026-04-18T00:00:00.000Z' },
+    ])
+    expect(
+        'full_payment outranks deposit_50 and waitlist even if older',
+        mixedPriorityPrimary.order_name,
+        '#full'
+    )
+
+    const newestWithinSameTier = selectPrimary([
+        { order_name: '#older-full', payment_type: 'full_payment', created_at: '2026-04-16T00:00:00.000Z' },
+        { order_name: '#newer-full', payment_type: 'full_payment', created_at: '2026-04-17T00:00:00.000Z' },
+    ])
+    expect(
+        'newest record wins within the same payment class',
+        newestWithinSameTier.order_name,
+        '#newer-full'
+    )
 
     // Build a minimal order map from CSV
     const ordersByEmail: Record<string, Array<{ order_name: string; payment_type: PaymentType; created_at: string }>> = {}
@@ -209,9 +275,9 @@ function main() {
     const waoPrimary = selectPrimary(waoOrders)
     expect('waowao0158@gmail.com primary = #1051 (full_payment wins over waitlist)', waoPrimary.order_name, '#1051')
 
-    // ── 4. Deduplicated email count ───────────────────────────────────────
+    // ── 5. Deduplicated email count ───────────────────────────────────────
 
-    console.log('\n── 4. Dataset summary ──')
+    console.log('\n── 5. Dataset summary ──')
     const uniqueEmails = Object.keys(ordersByEmail)
     const duplicateEmails = uniqueEmails.filter((e) => (ordersByEmail[e]?.length ?? 0) > 1)
     console.log(`  Total rows: ${rows.length}`)
