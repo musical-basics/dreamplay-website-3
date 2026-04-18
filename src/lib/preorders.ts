@@ -22,6 +22,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  *       The operative value is always derived from lineitem_name.
  */
 export type PaymentType = 'full_payment' | 'deposit_50' | 'waitlist_reservation'
+export type PreorderAudienceScope = 'all' | PaymentType
 
 export type ProductLine = 'pro' | 'bundle' | 'keyboard_only' | 'one' | 'unknown'
 
@@ -205,6 +206,39 @@ export function getCurrentReservationDisplay(
 
 // ── Primary preorder lookup ────────────────────────────────────────────────
 
+export function selectPrimaryPreorder(orders: PreorderOrder[]): PreorderOrder | null {
+    if (!orders.length) return null
+
+    const sorted = [...orders].sort((a, b) => {
+        const rankDiff = paymentTypePriority(a.payment_type) - paymentTypePriority(b.payment_type)
+        if (rankDiff !== 0) return rankDiff
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+
+    return sorted[0]
+}
+
+export function getPrimaryPreordersByEmail(orders: PreorderOrder[]): PreorderOrder[] {
+    const grouped = new Map<string, PreorderOrder[]>()
+
+    for (const order of orders) {
+        const normalizedEmail = order.email?.toLowerCase().trim()
+        if (!normalizedEmail) continue
+
+        const existing = grouped.get(normalizedEmail)
+        if (existing) {
+            existing.push(order)
+        } else {
+            grouped.set(normalizedEmail, [order])
+        }
+    }
+
+    return Array.from(grouped.values())
+        .map((group) => selectPrimaryPreorder(group))
+        .filter((order): order is PreorderOrder => Boolean(order))
+        .sort((a, b) => a.email.localeCompare(b.email))
+}
+
 /**
  * Returns the single "primary" preorder for a buyer email.
  * When multiple orders share the same normalized email, selection is deterministic:
@@ -232,16 +266,7 @@ export async function getPreorderByEmail(
         }
         if (!data || data.length === 0) return null
 
-        const orders = data as PreorderOrder[]
-
-        // Sort: lower rank first (full > deposit > waitlist), then newest created_at
-        orders.sort((a, b) => {
-            const rankDiff = paymentTypePriority(a.payment_type) - paymentTypePriority(b.payment_type)
-            if (rankDiff !== 0) return rankDiff
-            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        })
-
-        return orders[0]
+        return selectPrimaryPreorder(data as PreorderOrder[])
     } catch (err) {
         console.error('[getPreorderByEmail] Unexpected error:', err)
         return null
