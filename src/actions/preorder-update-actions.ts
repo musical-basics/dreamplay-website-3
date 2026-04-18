@@ -1,7 +1,6 @@
 'use server'
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
 import { createClient as createAppClient } from '@/lib/supabase/server'
 import {
     buildPreorderUpdateAudience,
@@ -12,7 +11,6 @@ import {
     normalizePreorderAudienceScope,
     type PreorderUpdateActionState,
     type PreorderUpdateAudienceMember,
-    type PreorderUpdateSendMode,
 } from '@/lib/preorder-updates'
 import type { PreorderOrder } from '@/lib/preorders'
 
@@ -20,10 +18,6 @@ const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
-
-const FROM_EMAIL = 'Lionel at DreamPlay <support@dreamplaypianos.com>'
-const DEFAULT_TO_EMAIL = 'support@dreamplaypianos.com'
-const BATCH_SIZE = 25
 
 export async function getPreorderUpdateAudience(): Promise<PreorderUpdateAudienceMember[]> {
     const { data, error } = await supabase
@@ -51,14 +45,14 @@ async function getAuthorizedAdminUser(): Promise<
     if (error || !user?.email) {
         return {
             ok: false,
-            message: 'You must be signed in as an allowed admin to send preorder updates.',
+            message: 'You must be signed in as an allowed admin to preview preorder updates.',
         }
     }
 
     if (!isPreorderUpdateAdminEmail(user.email)) {
         return {
             ok: false,
-            message: 'This account is not allowed to use the preorder update sender.',
+            message: 'This account is not allowed to preview preorder updates.',
         }
     }
 
@@ -83,7 +77,10 @@ function buildEmailBodyHtml(message: string): string {
         .split(/\n\s*\n/)
         .map((paragraph) => paragraph.trim())
         .filter(Boolean)
-        .map((paragraph) => `<p style="margin: 0 0 16px; color: #444; line-height: 1.7;">${escapeHtml(paragraph).replace(/\n/g, '<br />')}</p>`)
+        .map(
+            (paragraph) =>
+                `<p style="margin: 0 0 16px; color: #444; line-height: 1.7;">${escapeHtml(paragraph).replace(/\n/g, '<br />')}</p>`
+        )
         .join('')
 }
 
@@ -115,162 +112,57 @@ function buildEmailText(subject: string, message: string): string {
     return `${subject}\n\n${message.trim()}\n\nWith gratitude,\nLionel Yu\nFounder, DreamPlay Pianos\n\nYou are receiving this because you placed a DreamPlay preorder or reservation.`
 }
 
-function chunk<T>(items: T[], size: number): T[][] {
-    const chunks: T[][] = []
-
-    for (let index = 0; index < items.length; index += size) {
-        chunks.push(items.slice(index, index + size))
-    }
-
-    return chunks
-}
-
-export async function sendPreorderUpdate(
+export async function previewPreorderUpdateDraft(
     _previousState: PreorderUpdateActionState,
     formData: FormData
 ): Promise<PreorderUpdateActionState> {
     const scope = normalizePreorderAudienceScope(formData.get('scope'))
-    const mode: PreorderUpdateSendMode =
-        formData.get('mode') === 'test' ? 'test' : 'broadcast'
     const subject = normalizeTextInput(formData.get('subject'))
     const message = normalizeTextInput(formData.get('message'))
 
-    const unauthorizedState: PreorderUpdateActionState = {
+    const baseState: PreorderUpdateActionState = {
         ...INITIAL_PREORDER_UPDATE_ACTION_STATE,
         scope,
-        mode,
     }
 
     const admin = await getAuthorizedAdminUser()
     if (!admin.ok) {
         return {
-            ...unauthorizedState,
+            ...baseState,
             message: admin.message,
         }
     }
 
     if (!subject) {
         return {
-            ...unauthorizedState,
-            audienceCount: 0,
-            message: 'Add a subject before sending.',
+            ...baseState,
+            message: 'Add a subject before previewing the draft.',
         }
     }
 
     if (!message) {
         return {
-            ...unauthorizedState,
-            audienceCount: 0,
-            message: 'Add the update message before sending.',
+            ...baseState,
+            message: 'Add the update message before previewing the draft.',
         }
     }
 
     const audience = filterPreorderUpdateAudience(await getPreorderUpdateAudience(), scope)
-
-    if (mode === 'broadcast' && audience.length === 0) {
-        return {
-            ...unauthorizedState,
-            audienceCount: 0,
-            message: `No preorder buyers match ${getPreorderUpdateScopeLabel(scope).toLowerCase()}.`,
-        }
-    }
-
-    if (mode === 'broadcast' && formData.get('confirmSend') !== 'on') {
-        return {
-            ...unauthorizedState,
-            audienceCount: audience.length,
-            message: `Check the confirmation box before emailing ${audience.length} buyers.`,
-        }
-    }
-
-    if (!process.env.RESEND_API_KEY) {
-        return {
-            ...unauthorizedState,
-            audienceCount: audience.length,
-            message: 'RESEND_API_KEY is not configured. Audience preview works, but sending is blocked until Resend is configured.',
-        }
-    }
-
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const html = buildEmailHtml(subject, message)
-    const text = buildEmailText(subject, message)
-
-    if (mode === 'test') {
-        try {
-            await resend.emails.send({
-                from: FROM_EMAIL,
-                to: [admin.email],
-                replyTo: admin.email,
-                subject,
-                html,
-                text,
-            })
-
-            return {
-                success: true,
-                message: `Test email sent to ${admin.email}.`,
-                mode,
-                scope,
-                audienceCount: audience.length,
-                sentCount: 1,
-                failedCount: 0,
-            }
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown email error'
-            console.error('[sendPreorderUpdate:test] Resend error:', errorMessage)
-            return {
-                ...unauthorizedState,
-                audienceCount: audience.length,
-                message: `Test send failed: ${errorMessage}`,
-            }
-        }
-    }
-
-    let sentCount = 0
-    let failedCount = 0
-
-    for (const recipientBatch of chunk(
-        audience.map((member) => member.email),
-        BATCH_SIZE
-    )) {
-        try {
-            await resend.emails.send({
-                from: FROM_EMAIL,
-                to: [DEFAULT_TO_EMAIL],
-                bcc: recipientBatch,
-                replyTo: admin.email,
-                subject,
-                html,
-                text,
-            })
-
-            sentCount += recipientBatch.length
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown email error'
-            failedCount += recipientBatch.length
-            console.error('[sendPreorderUpdate:broadcast] Resend batch error:', errorMessage)
-        }
-    }
-
-    if (failedCount > 0) {
-        return {
-            success: false,
-            message: `Email sent to ${sentCount} buyers, but ${failedCount} failed. Check server logs before retrying.`,
-            mode,
-            scope,
-            audienceCount: audience.length,
-            sentCount,
-            failedCount,
-        }
-    }
+    const previewHtml = buildEmailHtml(subject, message)
+    const previewText = buildEmailText(subject, message)
+    const zeroAudience = audience.length === 0
 
     return {
         success: true,
-        message: `Email sent to ${sentCount} preorder buyers in ${chunk(audience, BATCH_SIZE).length} batch(es).`,
-        mode,
+        message: zeroAudience
+            ? `Draft preview ready, but ${getPreorderUpdateScopeLabel(scope).toLowerCase()} currently has 0 buyers. Safe mode only, no email has been sent.`
+            : `Draft preview ready for ${audience.length} preorder buyer(s). Safe mode only, no email has been sent.`,
+        mode: 'preview',
         scope,
         audienceCount: audience.length,
-        sentCount,
-        failedCount: 0,
+        previewSubject: subject,
+        previewMessage: message,
+        previewHtml,
+        previewText,
     }
 }

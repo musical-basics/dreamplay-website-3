@@ -17,26 +17,30 @@ export interface PreorderUpdateAudienceMember {
     created_at: string
 }
 
-export type PreorderUpdateSendMode = 'test' | 'broadcast'
+export type PreorderUpdateMode = 'preview'
 
 export interface PreorderUpdateActionState {
     success: boolean
     message: string | null
-    mode: PreorderUpdateSendMode
+    mode: PreorderUpdateMode
     scope: PreorderAudienceScope
     audienceCount: number
-    sentCount: number
-    failedCount: number
+    previewSubject: string
+    previewMessage: string
+    previewHtml: string | null
+    previewText: string | null
 }
 
 export const INITIAL_PREORDER_UPDATE_ACTION_STATE: PreorderUpdateActionState = {
     success: false,
     message: null,
-    mode: 'broadcast',
+    mode: 'preview',
     scope: 'all',
     audienceCount: 0,
-    sentCount: 0,
-    failedCount: 0,
+    previewSubject: '',
+    previewMessage: '',
+    previewHtml: null,
+    previewText: null,
 }
 
 const FALLBACK_ADMIN_EMAILS = ['lionel@musicalbasics.com']

@@ -25,7 +25,6 @@ export default async function PreorderUpdatesAdminPage() {
     }
 
     const audience = await getPreorderUpdateAudience()
-    const emailConfigured = Boolean(process.env.RESEND_API_KEY)
 
     return (
         <div className="min-h-screen bg-[#050505] px-6 py-12 text-white selection:bg-white/20 md:px-10">
@@ -35,18 +34,14 @@ export default async function PreorderUpdatesAdminPage() {
                         DreamPlay Pianos · Internal Admin
                     </p>
                     <h1 className="mt-4 font-serif text-4xl tracking-tight text-white md:text-5xl">
-                        Manual preorder updates
+                        Preorder update drafts
                     </h1>
                     <p className="mt-4 max-w-3xl text-sm leading-6 text-white/60">
-                        Smallest-safe V1 sender. It pulls deduped buyers from preorder_orders, keeps the trigger manual, and batches sends through Resend without exposing buyer email addresses to each other.
+                        Smallest-safe V1 drafting tool. It pulls deduped buyers from preorder_orders, previews the audience and copy, and keeps all send paths disabled.
                     </p>
                 </div>
 
-                <PreorderUpdateAdminClient
-                    viewerEmail={user.email!}
-                    emailConfigured={emailConfigured}
-                    audience={audience}
-                />
+                <PreorderUpdateAdminClient viewerEmail={user.email!} audience={audience} />
             </div>
         </div>
     )

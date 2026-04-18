@@ -1,8 +1,8 @@
 'use client'
 
 import { useActionState, useMemo, useState } from 'react'
-import { Loader2, Mail, Send, TestTube2 } from 'lucide-react'
-import { sendPreorderUpdate } from '@/actions/preorder-update-actions'
+import { FileText, Loader2, Mail, ShieldAlert } from 'lucide-react'
+import { previewPreorderUpdateDraft } from '@/actions/preorder-update-actions'
 import {
     filterPreorderUpdateAudience,
     getPreorderUpdateScopeLabel,
@@ -14,7 +14,6 @@ import type { PreorderAudienceScope } from '@/lib/preorders'
 
 interface PreorderUpdateAdminClientProps {
     viewerEmail: string
-    emailConfigured: boolean
     audience: PreorderUpdateAudienceMember[]
 }
 
@@ -60,14 +59,60 @@ function ResultBanner({ state }: { state: PreorderUpdateActionState }) {
     )
 }
 
+function DraftPreview({ state }: { state: PreorderUpdateActionState }) {
+    if (!state.previewHtml || !state.previewText) return null
+
+    return (
+        <section className="border border-white/10 bg-white/[0.03] p-6 md:p-8">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40">
+                        Draft preview
+                    </p>
+                    <p className="mt-3 text-sm text-white/60">
+                        Audience snapshot: <span className="text-white">{state.audienceCount}</span> recipient(s) · safe mode only
+                    </p>
+                </div>
+                <div className="inline-flex items-center gap-2 text-xs text-white/40">
+                    <ShieldAlert className="h-4 w-4" />
+                    Sending disabled
+                </div>
+            </div>
+
+            <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+                <div className="border border-white/10 bg-white p-4 text-black shadow-2xl shadow-black/20">
+                    <div dangerouslySetInnerHTML={{ __html: state.previewHtml }} />
+                </div>
+
+                <div className="space-y-4">
+                    <div className="border border-white/10 bg-black/20 p-4">
+                        <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-white/35">
+                            Subject
+                        </p>
+                        <p className="mt-3 text-sm text-white">{state.previewSubject}</p>
+                    </div>
+
+                    <div className="border border-white/10 bg-black/20 p-4">
+                        <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-white/35">
+                            Plain-text version
+                        </p>
+                        <pre className="mt-3 whitespace-pre-wrap text-sm leading-6 text-white/75">
+                            {state.previewText}
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    )
+}
+
 export default function PreorderUpdateAdminClient({
     viewerEmail,
-    emailConfigured,
     audience,
 }: PreorderUpdateAdminClientProps) {
     const [scope, setScope] = useState<PreorderAudienceScope>('all')
     const [state, formAction, isPending] = useActionState(
-        sendPreorderUpdate,
+        previewPreorderUpdateDraft,
         INITIAL_PREORDER_UPDATE_ACTION_STATE
     )
 
@@ -88,6 +133,10 @@ export default function PreorderUpdateAdminClient({
 
     return (
         <div className="space-y-8">
+            <div className="border border-sky-500/40 bg-sky-500/10 px-4 py-3 text-sm text-sky-100">
+                Safe mode only. This screen can draft and preview a preorder update, but it cannot send email.
+            </div>
+
             <div className="grid gap-4 md:grid-cols-4">
                 {SCOPE_OPTIONS.map((option) => {
                     const count = audienceCounts[option]
@@ -114,21 +163,18 @@ export default function PreorderUpdateAdminClient({
                 })}
             </div>
 
-            {!emailConfigured && (
-                <div className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-                    RESEND_API_KEY is missing in this environment. Lionel can still review the audience and compose copy locally, but sends are blocked until Resend is configured.
-                </div>
-            )}
-
             <form action={formAction} className="space-y-6 border border-white/10 bg-white/[0.03] p-6 md:p-8">
                 <input type="hidden" name="scope" value={scope} />
 
                 <div>
                     <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40">
-                        Compose update
+                        Compose draft
                     </p>
                     <p className="mt-3 text-sm text-white/60">
                         Current audience: <span className="text-white">{getPreorderUpdateScopeLabel(scope)}</span> · {filteredAudience.length} recipient(s)
+                    </p>
+                    <p className="mt-2 text-xs text-white/35">
+                        Preview generation is server-rendered only. No test send and no broadcast send exist in this safe-mode version.
                     </p>
                 </div>
 
@@ -162,53 +208,27 @@ export default function PreorderUpdateAdminClient({
                         className="w-full border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition-colors placeholder:text-white/25 focus:border-white/30"
                     />
                     <p className="text-xs text-white/35">
-                        Plain text only in V1. Paragraph breaks are preserved in the email.
+                        Plain text only in V1. Paragraph breaks are preserved in the preview.
                     </p>
                 </div>
-
-                <label className="flex items-start gap-3 border border-white/10 bg-black/20 p-4 text-sm text-white/70">
-                    <input
-                        type="checkbox"
-                        name="confirmSend"
-                        className="mt-1 h-4 w-4 border-white/20 bg-transparent"
-                    />
-                    <span>
-                        I understand the broadcast action will email <span className="text-white">{filteredAudience.length}</span> preorder buyer(s). Test sends ignore this checkbox.
-                    </span>
-                </label>
 
                 <div className="flex flex-col gap-3 sm:flex-row">
                     <button
                         type="submit"
-                        name="mode"
-                        value="test"
-                        disabled={isPending || !emailConfigured}
-                        className="inline-flex items-center justify-center gap-2 border border-white/20 px-5 py-3 text-xs uppercase tracking-[0.18em] text-white transition-colors disabled:cursor-not-allowed disabled:border-white/10 disabled:text-white/25"
-                    >
-                        {isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <TestTube2 className="h-4 w-4" />
-                        )}
-                        Send test to {viewerEmail}
-                    </button>
-
-                    <button
-                        type="submit"
-                        name="mode"
-                        value="broadcast"
-                        disabled={isPending || !emailConfigured || filteredAudience.length === 0}
+                        disabled={isPending}
                         className="inline-flex items-center justify-center gap-2 border border-white bg-white px-5 py-3 text-xs uppercase tracking-[0.18em] text-black transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-white/25"
                     >
                         {isPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                            <Send className="h-4 w-4" />
+                            <FileText className="h-4 w-4" />
                         )}
-                        Send to {filteredAudience.length} buyer(s)
+                        Generate draft preview
                     </button>
                 </div>
             </form>
+
+            <DraftPreview state={state} />
 
             <section className="border border-white/10 bg-white/[0.03] p-6 md:p-8">
                 <div className="flex items-center justify-between gap-4">
